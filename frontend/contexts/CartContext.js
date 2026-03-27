@@ -9,6 +9,10 @@ const CART_KEY = "trd_cart";
 
 const CartContext = createContext(null);
 
+function sameProductId(left, right) {
+  return Number(left) === Number(right);
+}
+
 function loadCart() {
   if (typeof window === "undefined") return [];
   try {
@@ -25,10 +29,10 @@ function saveCart(items) {
 function cartReducer(state, action) {
   switch (action.type) {
     case "ADD": {
-      const existing = state.find((i) => i.product.id === action.product.id);
+      const existing = state.find((i) => sameProductId(i.product.id, action.product.id));
       if (existing) {
         return state.map((i) =>
-          i.product.id === action.product.id
+          sameProductId(i.product.id, action.product.id)
             ? { ...i, quantity: i.quantity + (action.qty || 1) }
             : i
         );
@@ -36,10 +40,10 @@ function cartReducer(state, action) {
       return [...state, { product: action.product, quantity: action.qty || 1 }];
     }
     case "REMOVE":
-      return state.filter((i) => i.product.id !== action.productId);
+      return state.filter((i) => !sameProductId(i.product.id, action.productId));
     case "UPDATE_QTY":
       return state.map((i) =>
-        i.product.id === action.productId ? { ...i, quantity: action.qty } : i
+        sameProductId(i.product.id, action.productId) ? { ...i, quantity: action.qty } : i
       );
     case "CLEAR":
       return [];
@@ -81,7 +85,7 @@ export function CartProvider({ children }) {
     (s, i) => s + Number(i.product.price) * i.quantity,
     0
   );
-  const isInCart = (productId) => items.some((i) => i.product.id === productId);
+  const isInCart = (productId) => items.some((i) => sameProductId(i.product.id, productId));
 
   return (
     <CartContext.Provider
