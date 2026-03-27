@@ -5,7 +5,16 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_PREFIX = "/api/v1";
+
+function normalizeApiBaseUrl(url) {
+  const trimmed = (url || "http://localhost:8000/api/v1").replace(/\/+$/, "");
+  if (/\/api\/v\d+$/i.test(trimmed)) return trimmed;
+  if (/\/api$/i.test(trimmed)) return `${trimmed}/v1`;
+  return `${trimmed}${API_PREFIX}`;
+}
+
+const BASE_URL = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -101,6 +110,12 @@ export const authApi = {
 
 export const productsApi = {
   list:         (params) => api.get("/products/", { params }),
+  search:       (params) => api.get("/products/search/", { params }),
+  recommendations: (params) => api.get("/products/recommendations/", { params }),
+  similar:      (slug, params) => api.get(`/products/${slug}/similar/`, { params }),
+  customersAlsoBought: (slug, params) => api.get(`/products/${slug}/customers-also-bought/`, { params }),
+  trendingInCategory: (slug, params) => api.get(`/products/${slug}/trending-in-category/`, { params }),
+  sellerBestProducts: (slug, params) => api.get(`/products/${slug}/seller-best-products/`, { params }),
   detail:       (slug) => api.get(`/products/${slug}/`),
   featured:     () => api.get("/products/featured/"),
   deals:        () => api.get("/products/deals/"),
@@ -199,6 +214,7 @@ export const wishlistApi = {
 export const offersApi = {
   list:           () => api.get("/offers/"),
   forProduct: (id) => api.get("/offers/", { params: { product_id: id } }),
+  priceCart: (data) => api.post("/offers/price-cart/", data),
 };
 
 export default api;
