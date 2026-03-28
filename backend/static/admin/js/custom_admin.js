@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    var STORAGE_KEY = 'fs_admin_theme';
+    var STORAGE_KEY = 'fs_admin_theme_v2';
 
     function applyTheme(isDark) {
         if (isDark) {
@@ -35,9 +35,9 @@
         // Don't add twice
         if (document.getElementById('fs-theme-toggle')) return;
 
-        // Read saved preference (default is dark)
+        // Read saved preference (default is light)
         var saved = localStorage.getItem(STORAGE_KEY);
-        var isDark = saved !== 'light'; // default dark
+        var isDark = saved === 'dark';
 
         // Apply on page load
         applyTheme(isDark);
