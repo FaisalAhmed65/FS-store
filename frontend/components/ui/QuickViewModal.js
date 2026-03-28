@@ -11,6 +11,9 @@ import Image from "next/image";
 import { formatPrice, discountPct, mediaUrl, productHref } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { HeartIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
 export default function QuickViewModal({ product, onClose, onAddToCart }) {
   const [mounted, setMounted] = useState(false);
@@ -18,6 +21,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
   const { lang } = useLang();
   const isBn = lang === "bn";
   const { addItem } = useCart();
+  const { toggle, isWishlisted } = useWishlist();
 
   // Close on Escape key
   useEffect(() => {
@@ -57,6 +61,14 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
     onClose();
   }
 
+  async function handleWishlist() {
+    try {
+      await toggle(product);
+    } catch {
+      // WishlistContext rolls back failed optimistic updates.
+    }
+  }
+
   const modal = (
     <div
       className="qv-overlay"
@@ -70,7 +82,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
         <button
           className="qv-close"
           onClick={onClose}
-          aria-label="Close quick view"
+          aria-label={isBn ? "কুইক ভিউ বন্ধ করুন" : "Close quick view"}
         >
           <i className="fa fa-times" />
         </button>
@@ -97,10 +109,10 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
           <div className="qv-info-col">
             {/* Badges row */}
             <div className="flex gap-1.5 flex-wrap mb-2">
-              {is_bestseller && <span className="qv-label" style={{ background: "#006c4f" }}>Best Seller</span>}
-              {is_deal       && <span className="qv-label" style={{ background: "#e62e04" }}>Deal</span>}
-              {is_new_arrival && <span className="qv-label" style={{ background: "#4263eb" }}>New</span>}
-              {is_featured   && <span className="qv-label" style={{ background: "#fccc04", color: "#000" }}>Featured</span>}
+              {is_bestseller && <span className="qv-label" style={{ background: "#006c4f" }}>{isBn ? "বেস্ট সেলার" : "Best Seller"}</span>}
+              {is_deal       && <span className="qv-label" style={{ background: "#e62e04" }}>{isBn ? "ডিল" : "Deal"}</span>}
+              {is_new_arrival && <span className="qv-label" style={{ background: "#4263eb" }}>{isBn ? "নতুন" : "New"}</span>}
+              {is_featured   && <span className="qv-label" style={{ background: "#fccc04", color: "#000" }}>{isBn ? "ফিচার্ড" : "Featured"}</span>}
             </div>
 
             {/* Name */}
@@ -120,7 +132,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
                 </div>
                 <span className="text-xs text-gray-500">
                   {Number(rating_avg).toFixed(1)}
-                  {rating_count ? ` (${rating_count})` : ""}
+                  {rating_count ? (isBn ? ` (${rating_count} রিভিউ)` : ` (${rating_count})`) : ""}
                 </span>
               </div>
             )}
@@ -131,7 +143,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
               {discount > 0 && (
                 <>
                   <span className="qv-compare">{formatPrice(compare_price)}</span>
-                  <span className="qv-save">{discount}% OFF</span>
+                  <span className="qv-save">{isBn ? `${discount}% ছাড়` : `${discount}% OFF`}</span>
                 </>
               )}
             </div>
@@ -159,7 +171,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
               )}
               {is_express && (
                 <span className="qv-express-badge">
-                  <i className="fa fa-bolt mr-1" />Express
+                  <i className="fa fa-bolt mr-1" />{isBn ? "এক্সপ্রেস" : "Express"}
                 </span>
               )}
             </div>
@@ -182,6 +194,19 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
               >
                 <i className="fa fa-shopping-cart mr-1.5" />
                 {isBn ? "কার্টে যোগ করুন" : "Add to Cart"}
+              </button>
+              <button
+                type="button"
+                className="qv-btn-wishlist"
+                onClick={handleWishlist}
+                aria-pressed={isWishlisted(product.id)}
+              >
+                {isWishlisted(product.id)
+                  ? <HeartSolid className="w-4 h-4 text-red-500" />
+                  : <HeartIcon className="w-4 h-4" />}
+                {isWishlisted(product.id)
+                  ? (isBn ? "উইশলিস্টে আছে" : "Wishlisted")
+                  : (isBn ? "উইশলিস্টে যোগ করুন" : "Add to Wishlist")}
               </button>
             </div>
           </div>
