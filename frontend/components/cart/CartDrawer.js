@@ -4,14 +4,24 @@
  */
 import Link from "next/link";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useCart } from "@/contexts/CartContext";
+import { useLang } from "@/contexts/LanguageContext";
 import { formatPrice, mediaUrl } from "@/lib/utils";
 
 export default function CartDrawer({ open, onClose }) {
   const { items, removeItem, updateQty, totalPrice, totalItems } = useCart();
+  const { lang } = useLang();
+  const isBn = lang === "bn";
+  const itemsRef = useRef(null);
+
+  useEffect(() => {
+    if (open && itemsRef.current) {
+      itemsRef.current.scrollTop = 0;
+    }
+  }, [open, totalItems]);
 
   return (
     <Transition show={open} as={Fragment}>
@@ -31,24 +41,24 @@ export default function CartDrawer({ open, onClose }) {
           enter="ease-out duration-250" enterFrom="translate-x-full" enterTo="translate-x-0"
           leave="ease-in duration-200" leaveFrom="translate-x-0" leaveTo="translate-x-full"
         >
-          <Dialog.Panel className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl flex flex-col">
+          <Dialog.Panel className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+            <div className="shrink-0 flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
               <Dialog.Title className="font-bold text-lg text-primary">
-                My Cart {totalItems > 0 && <span className="text-muted font-normal text-sm">({totalItems})</span>}
+                {isBn ? "আমার কার্ট" : "My Cart"} {totalItems > 0 && <span className="text-muted font-normal text-sm">({totalItems})</span>}
               </Dialog.Title>
-              <button onClick={onClose} aria-label="Close cart">
+              <button onClick={onClose} aria-label={isBn ? "কার্ট বন্ধ করুন" : "Close cart"}>
                 <XMarkIcon className="w-6 h-6 text-gray-500" />
               </button>
             </div>
 
             {/* Items */}
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+            <div ref={itemsRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4">
               {items.length === 0 ? (
                 <div className="text-center text-muted py-16">
-                  <p>Your cart is empty.</p>
+                  <p>{isBn ? "আপনার কার্ট খালি।" : "Your cart is empty."}</p>
                   <button onClick={onClose} className="mt-4 btn-accent rounded px-6 py-2">
-                    Start Shopping
+                    {isBn ? "কেনাকাটা শুরু করুন" : "Start Shopping"}
                   </button>
                 </div>
               ) : (
@@ -81,7 +91,7 @@ export default function CartDrawer({ open, onClose }) {
                     <button
                       onClick={() => removeItem(product.id)}
                       className="text-gray-400 hover:text-red-500 self-start mt-1"
-                      aria-label="Remove"
+                          aria-label={isBn ? "সরান" : "Remove"}
                     >
                       <TrashIcon className="w-4 h-4" />
                     </button>
@@ -92,9 +102,9 @@ export default function CartDrawer({ open, onClose }) {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-gray-200 px-4 py-4 space-y-3">
+              <div className="shrink-0 border-t border-gray-200 px-4 py-4 space-y-3 bg-white">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted">Subtotal</span>
+                  <span className="text-muted">{isBn ? "সাবটোটাল" : "Subtotal"}</span>
                   <span className="font-bold text-primary">{formatPrice(totalPrice)}</span>
                 </div>
                 <Link
@@ -102,7 +112,7 @@ export default function CartDrawer({ open, onClose }) {
                   onClick={onClose}
                   className="block w-full btn-accent text-center py-2 rounded font-semibold"
                 >
-                  View Cart & Checkout
+                  {isBn ? "কার্ট দেখুন ও চেকআউট" : "View Cart & Checkout"}
                 </Link>
               </div>
             )}
