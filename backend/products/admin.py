@@ -27,17 +27,17 @@ class ProductAttributeInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display   = ("name", "seller", "category", "price", "status", "is_published",
+    list_display   = ("name", "brand", "seller", "category", "price", "status", "is_published",
                       "is_featured", "is_deal", "is_new_arrival", "is_bestseller", "stock_quantity")
     list_filter    = ("status", "is_published", "is_featured", "is_deal",
                       "is_new_arrival", "is_bestseller", "category")
-    search_fields  = ("name", "name_bn", "sku", "slug")
+    search_fields  = ("name", "name_bn", "brand", "sku", "slug")
     prepopulated_fields = {"slug": ("name",)}
     list_editable  = ("status", "is_published", "is_featured", "is_deal")
     inlines        = (ProductImageInline, ProductAttributeInline)
     readonly_fields = ("rating_avg", "rating_count", "created_at", "updated_at")
     fieldsets = (
-        ("Core", {"fields": ("name", "name_bn", "slug", "description", "description_bn",
+        ("Core", {"fields": ("name", "name_bn", "slug", "brand", "description", "description_bn",
                               "get_in", "get_in_bn", "image")}),
         ("Pricing", {"fields": ("price", "compare_price")}),
         ("Relations", {"fields": ("category", "seller")}),

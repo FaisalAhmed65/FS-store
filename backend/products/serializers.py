@@ -21,6 +21,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     category_name = serializers.CharField(source="category.name", read_only=True)
     category_slug = serializers.CharField(source="category.slug", read_only=True)
+    recommendation_score = serializers.SerializerMethodField()
+    recommendation_reasons = serializers.SerializerMethodField()
 
     def get_image(self, obj):
         image = obj.image or obj.images.filter(is_main=True).first() or obj.images.first()
@@ -32,16 +34,23 @@ class ProductListSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(image_file.url)
         return image_file.url
 
+    def get_recommendation_score(self, obj):
+        return getattr(obj, "recommendation_score", None)
+
+    def get_recommendation_reasons(self, obj):
+        return getattr(obj, "recommendation_reasons", [])
+
     class Meta:
         model  = Product
-        fields = ("id", "name", "name_bn", "slug", "image", "price", "compare_price",
+        fields = ("id", "name", "name_bn", "slug", "brand", "image", "price", "compare_price",
                   "category_name", "category_slug",
                   "discount_pct", "get_in", "get_in_bn",
                   "is_free_delivery", "delivery_type",
                   "rating_avg", "rating_count", "stock_quantity",
                   "is_deal", "is_featured", "is_new_arrival", "is_bestseller",
                   "deal_discount_pct", "deal_end_date",
-                  "sold_recently", "category_rank", "category_rank_display")
+                  "sold_recently", "category_rank", "category_rank_display",
+                  "recommendation_score", "recommendation_reasons")
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -66,7 +75,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = Product
-        fields = ("id", "name", "name_bn", "slug", "description", "description_bn",
+        fields = ("id", "name", "name_bn", "slug", "brand", "description", "description_bn",
                   "get_in", "get_in_bn", "image", "images", "attributes",
                   "price", "compare_price", "discount_pct",
                   "category", "category_name", "category_slug", "seller", "status", "is_published",
@@ -83,7 +92,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Product
-        fields = ("name", "name_bn", "description", "description_bn",
+        fields = ("name", "name_bn", "brand", "description", "description_bn",
                   "get_in", "get_in_bn", "image",
                   "price", "compare_price",
                   "category", "delivery_type",
