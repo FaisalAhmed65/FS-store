@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap");
+
+@layer base {
+  html {
+    @apply text-gray-900 bg-surface;
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  /* --- Product card --- */
+  .card-product {
+    @apply bg-card rounded-lg shadow-card hover:shadow-card-hover transition-shadow duration-200;
+  }
+
+  /* --- Accent button --- */
+  .btn-accent {
+    @apply bg-accent hover:bg-accent-hover text-gray-900 font-semibold px-4 py-2 rounded transition-colors duration-150;
+  }
+
+  /* --- Primary button --- */
+  .btn-primary {
+    @apply bg-primary hover:bg-opacity-90 text-white font-semibold px-4 py-2 rounded transition-colors duration-150;
+  }
+
+  /* --- Price --- */
+  .price {
+    @apply text-price-red font-bold;
+  }
+
+  /* --- Discount badge --- */
+  .badge-discount {
+    @apply inline-block bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded;
+  }
+
+  /* --- Section title style (matches Odoo snippet headings) --- */
+  .section-title {
+    @apply text-xl font-bold text-primary border-b-2 border-accent pb-2 mb-4;
+  }
+
+  /* --- Nav link --- */
+  .nav-link {
+    @apply text-sm font-medium text-gray-700 hover:text-primary transition-colors;
+  }
+
+  /* --- Generic input field (dark theme) --- */
+  .input-field {
+    @apply w-full border border-gray-300 bg-card text-gray-900 rounded px-3 py-2 text-sm
+           focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
+           placeholder:text-muted;
+  }
+
+  /* --- Select field (dark theme) --- */
+  .input-field select,
+  select.input-field {
+    @apply bg-card text-gray-900;
+  }
+}
+
+/* Custom scrollbar (dark) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d1c;
+}
+::-webkit-scrollbar-thumb {
+  background: #3d3c5a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6366a0;
+}

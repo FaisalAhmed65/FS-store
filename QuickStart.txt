@@ -1,0 +1,12 @@
+# Backend
+cd trd-store/backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+
+# Frontend (separate terminal)
+cd trd-store/frontend
+npm install
+cp .env.local.example .env.local
+npm run dev
