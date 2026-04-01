@@ -10,7 +10,7 @@ import { categoriesApi } from "@/lib/api";
 import { useLang } from "@/contexts/LanguageContext";
 
 export default function CategoryCarouselBar() {
-  const { data } = useSWR("catbar", () => categoriesApi.list({ parent: "root" }).then((r) => r.data?.results ?? r.data ?? []));
+  const { data } = useSWR("catbar", () => categoriesApi.list({ root_only: true }).then((r) => r.data?.results ?? r.data ?? []));
   const { lang } = useLang();
   const scrollRef = useRef(null);
   const isBn = lang === "bn";

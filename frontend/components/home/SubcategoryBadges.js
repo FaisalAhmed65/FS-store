@@ -20,7 +20,7 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
   const [autoParentId, setAutoParentId] = useState(null);
   useEffect(() => {
     if (!propParentId) {
-      categoriesApi.list({ parent: "root" })
+      categoriesApi.list({ root_only: true })
         .then((r) => {
           const cats = r.data?.results ?? r.data ?? [];
           if (cats.length > 0) setAutoParentId(cats[0].id);

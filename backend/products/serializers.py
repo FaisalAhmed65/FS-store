@@ -22,7 +22,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Product
         fields = ("id", "name", "name_bn", "slug", "image", "price", "compare_price",
-                  "discount_pct", "is_free_delivery", "delivery_type",
+                  "discount_pct", "get_in", "get_in_bn",
+                  "is_free_delivery", "delivery_type",
                   "rating_avg", "rating_count", "stock_quantity",
                   "is_deal", "is_featured", "is_new_arrival", "is_bestseller",
                   "deal_discount_pct", "deal_end_date")

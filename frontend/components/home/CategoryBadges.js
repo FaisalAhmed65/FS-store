@@ -13,7 +13,7 @@ import { useLang } from "@/contexts/LanguageContext";
 
 export default function CategoryBadges() {
   const { data, isLoading } = useSWR("cat-badges", () =>
-    categoriesApi.list({ parent: "root" }).then((r) => r.data?.results ?? r.data ?? [])
+    categoriesApi.list({ root_only: true }).then((r) => r.data?.results ?? r.data ?? [])
   );
   const scrollRef = useRef(null);
   const { lang } = useLang();

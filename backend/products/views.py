@@ -12,7 +12,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ("category", "seller", "status", "is_featured", "is_deal",
                         "is_new_arrival", "is_bestseller", "is_published")
-    search_fields = ("name", "name_ar", "sku", "description")
+    search_fields = ("name", "name_bn", "sku", "description")
     ordering_fields = ("price", "rating_avg", "created_at", "name")
 
     def get_queryset(self):
@@ -53,4 +53,9 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, url_path="bestsellers")
     def bestsellers(self, request):
         qs = self.get_queryset().filter(is_bestseller=True)[:24]
+        return Response(ProductListSerializer(qs, many=True, context={"request": request}).data)
+
+    @action(detail=False, url_path="free-delivery")
+    def free_delivery(self, request):
+        qs = self.get_queryset().filter(is_free_delivery=True)[:24]
         return Response(ProductListSerializer(qs, many=True, context={"request": request}).data)

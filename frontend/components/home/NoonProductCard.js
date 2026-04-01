@@ -27,6 +27,7 @@ export default function NoonProductCard({ product }) {
     slug, name, name_bn, image, price, compare_price,
     is_featured, is_deal, is_new_arrival, is_bestseller,
     is_free_delivery, stock_quantity, delivery_type,
+    get_in, get_in_bn,
   } = product;
 
   const discount = discountPct(compare_price, price);
@@ -90,6 +91,13 @@ export default function NoonProductCard({ product }) {
           <h3 className="text-[13px] leading-[1.4] font-medium m-0 line-clamp-2 min-h-[36px]" style={{ color: "#1a1a2e" }}>
             {displayName}
           </h3>
+
+          {/* Get In (e.g., packaging) */}
+          {(get_in || get_in_bn) && (
+            <p className="text-[11px] text-gray-600 m-0 line-clamp-1">
+              {isBn && get_in_bn ? get_in_bn : get_in}
+            </p>
+          )}
 
           {/* Stock indicator */}
           {stock_quantity != null && stock_quantity > 0 && stock_quantity <= 5 && (

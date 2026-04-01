@@ -98,14 +98,16 @@ export const productsApi = {
   detail:       (slug) => api.get(`/products/${slug}/`),
   featured:     () => api.get("/products/featured/"),
   deals:        () => api.get("/products/deals/"),
-  newArrivals:  () => api.get("/products/new-arrivals/"),
-  bestsellers:  () => api.get("/products/bestsellers/"),
+  newArrivals:   () => api.get("/products/new-arrivals/"),
+  bestsellers:   () => api.get("/products/bestsellers/"),
+  freeDelivery:  () => api.get("/products/free-delivery/"),
 };
 
 export const categoriesApi = {
   list:      (params) => api.get("/categories/", { params }),
   detail:    (slug) => api.get(`/categories/${slug}/`),
   showcase:  () => api.get("/categories/", { params: { showcase: "1" } }),
+  tree:      () => api.get("/categories/tree/"),
 };
 
 export const sellerApi = {
