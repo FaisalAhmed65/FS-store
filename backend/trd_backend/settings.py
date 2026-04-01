@@ -9,6 +9,8 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
+    # Jazzmin must be FIRST — before django.contrib.admin
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -113,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ─── Localisation ──────────────────────────────────────────────────────────────
-LANGUAGE_CODE = "bn"          # Bengali
+LANGUAGE_CODE = "en-us"       # English (admin + API messages in English)
 TIME_ZONE     = "Asia/Dhaka"  # Bangladesh Standard Time (UTC+6)
 USE_I18N = True
 USE_TZ   = True
@@ -191,4 +193,107 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "TRD Store API",
     "DESCRIPTION": "TRD Store — Django + Next.js eCommerce platform",
     "VERSION": "1.0.0",
+}
+
+# ─── Jazzmin Admin UI ─────────────────────────────────────────────────────────
+JAZZMIN_SETTINGS = {
+    # Window title & brand
+    "site_title": "TRD Store Admin",
+    "site_header": "TRD Store",
+    "site_brand": "TRD Store",
+    "site_logo": None,  # set to "img/logo.png" if you add a logo in static
+    "welcome_sign": "Welcome to TRD Store Admin Panel",
+    "copyright": "TRD Store © 2026",
+
+    # Search bar — searches across these models
+    "search_model": ["customers.Customer", "products.ProductTemplate", "orders.Order"],
+
+    # Top navigation links
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Store", "url": "/", "new_window": True},
+        {"name": "API Docs", "url": "/api/schema/swagger-ui/", "new_window": True},
+    ],
+
+    # User menu links (top right)
+    "usermenu_links": [
+        {"name": "API Docs", "url": "/api/schema/swagger-ui/", "new_window": True, "icon": "fas fa-book"},
+        {"model": "customers.customer"},
+    ],
+
+    # Side menu icons per app/model
+    "icons": {
+        "auth":                    "fas fa-shield-alt",
+        "customers.customer":      "fas fa-users",
+        "categories.category":     "fas fa-th-large",
+        "products.producttemplate":"fas fa-box-open",
+        "products.productvariant": "fas fa-cubes",
+        "products.brand":          "fas fa-trademark",
+        "sellers.seller":          "fas fa-store",
+        "orders.order":            "fas fa-shopping-cart",
+        "orders.orderline":        "fas fa-list",
+        "reviews.review":          "fas fa-star",
+        "wishlists.wishlist":      "fas fa-heart",
+        "offers.pricelist":        "fas fa-tags",
+        "payments.payment":        "fas fa-credit-card",
+    },
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+
+    # Side menu ordering
+    "order_with_respect_to": [
+        "customers", "products", "categories", "orders",
+        "sellers", "reviews", "wishlists", "offers", "payments",
+    ],
+
+    # UI tweaks
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "related_modal_active": True,
+
+    # Theme: use a clean, modern look
+    "custom_css": None,
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "customers.customer": "horizontal_tabs",
+    },
+    "language_chooser": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-warning",   # yellow brand bar (matches TRD yellow)
+    "accent": "accent-warning",         # yellow accent
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-warning",  # dark sidebar with yellow highlights
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary": "btn-warning",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
 }

@@ -21,15 +21,20 @@
 }
 
 /* ====== Language Toggle System ====== */
-/* Pattern: wrap text in <span className="t-en">...</span><span className="t-bn">...</span> */
+/* Placed outside @layer so it beats all Tailwind layers */
 .t-bn {
-  display: none;
+  display: none !important;
 }
 body.lang-bn .t-en {
-  display: none;
+  display: none !important;
 }
 body.lang-bn .t-bn {
-  display: inline;
+  display: inline !important;
+}
+/* For block-level elements (.t-bn.block, .t-bn.flex, etc.) */
+body.lang-bn span.t-bn,
+body.lang-bn div.t-bn {
+  display: revert !important;
 }
 
 /* Bengali font for bn mode */
