@@ -2,16 +2,6 @@ from django.contrib import admin
 from .models import Product, ProductImage, ProductAttribute
 
 
-class ProductImageInline(admin.TabularInline):
-    model = ProductImage
-    extra = 2
-
-
-class ProductAttributeInline(admin.TabularInline):
-    model = ProductAttribute
-    extra = 1
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display   = ("name", "seller", "category", "price", "status", "is_published",
@@ -21,7 +11,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields  = ("name", "name_bn", "sku", "slug")
     prepopulated_fields = {"slug": ("name",)}
     list_editable  = ("status", "is_published", "is_featured", "is_deal")
-    inlines        = [ProductImageInline, ProductAttributeInline]
+    inlines        = []
     readonly_fields = ("rating_avg", "rating_count", "created_at", "updated_at")
     fieldsets = (
         ("Core", {"fields": ("name", "name_bn", "slug", "description", "description_bn",

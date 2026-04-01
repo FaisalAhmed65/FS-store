@@ -2,10 +2,12 @@
  * components/home/NoonProductCard.js
  * Noon-style product card — matches Odoo noon_product_card template exactly.
  */
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice, discountPct, mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+import QuickViewModal from "@/components/ui/QuickViewModal";
 
 const BADGE_COLORS = {
   bestseller: { bg: "#006c4f", label: "Best Seller", labelBn: "বেস্ট সেলার" },
@@ -19,21 +21,24 @@ export default function NoonProductCard({ product }) {
   if (!product) return null;
   const { lang } = useLang();
   const isBn = lang === "bn";
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   const {
-    slug, name, brand_name, image, price, compare_at_price,
-    is_featured, is_deal, is_new, is_bestseller,
-    is_free_delivery, stock_remaining, is_express,
+    slug, name, name_bn, image, price, compare_price,
+    is_featured, is_deal, is_new_arrival, is_bestseller,
+    is_free_delivery, stock_quantity, delivery_type,
   } = product;
 
-  const discount = discountPct(compare_at_price, price);
+  const discount = discountPct(compare_price, price);
   const href = `/shop/${slug || product.id}`;
+  const is_express = delivery_type === "express";
+  const displayName = isBn && name_bn ? name_bn : name;
 
   // Determine top badge
   let badge = null;
   if (is_bestseller) badge = BADGE_COLORS.bestseller;
   else if (is_deal) badge = BADGE_COLORS.deals;
-  else if (is_new) badge = BADGE_COLORS.new;
+  else if (is_new_arrival) badge = BADGE_COLORS.new;
   else if (is_featured) badge = BADGE_COLORS.featured;
 
   return (
@@ -68,13 +73,14 @@ export default function NoonProductCard({ product }) {
             sizes="(max-width: 768px) 50vw, 200px"
             unoptimized
           />
-          {/* Quick Add */}
+          {/* Quick View */}
           <button
             className="noon-quick-add"
-            onClick={(e) => { e.preventDefault(); /* TODO: add to cart */ }}
-            aria-label="Quick add to cart"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickViewOpen(true); }}
+            aria-label="Quick view product"
+            title="Quick View"
           >
-            <i className="fa fa-plus text-gray-600 text-base" />
+            <i className="fa fa-eye text-gray-600 text-base" />
           </button>
         </div>
 
@@ -82,24 +88,18 @@ export default function NoonProductCard({ product }) {
         <div className="flex flex-col gap-1.5 flex-1">
           {/* Product name */}
           <h3 className="text-[13px] leading-[1.4] font-medium m-0 line-clamp-2 min-h-[36px]" style={{ color: "#1a1a2e" }}>
-            {name}
+            {displayName}
           </h3>
 
-          {/* Brand + Stock */}
-          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-            {brand_name && (
-              <span className="text-[11px] font-medium text-gray-500 truncate">
-                {brand_name}
-              </span>
-            )}
-            {stock_remaining != null && stock_remaining > 0 && stock_remaining <= 5 && (
+          {/* Stock indicator */}
+          {stock_quantity != null && stock_quantity > 0 && stock_quantity <= 5 && (
+            <div className="mt-0.5">
               <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-1.5 py-px animate-pulse">
                 <i className="fa fa-exclamation-circle text-[10px]" />
-                <span className="t-en">Only {stock_remaining} left</span>
-                <span className="t-bn">মাত্র {stock_remaining}টি বাকি</span>
+                <span>{isBn ? `মাত্র ${stock_quantity}টি বাকি` : `Only ${stock_quantity} left`}</span>
               </span>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Price */}
           <div className="mt-1">
@@ -112,7 +112,7 @@ export default function NoonProductCard({ product }) {
             {discount > 0 && (
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="text-xs text-gray-400 line-through">
-                  ৳{formatPrice(compare_at_price).replace("৳", "")}
+                  ৳{formatPrice(compare_price).replace("৳", "")}
                 </span>
                 <span className="text-[13px] font-bold text-green-700">
                   {discount}% OFF
@@ -142,6 +142,11 @@ export default function NoonProductCard({ product }) {
           )}
         </div>
       </Link>
+
+      {/* Quick View Modal */}
+      {quickViewOpen && (
+        <QuickViewModal product={product} onClose={() => setQuickViewOpen(false)} />
+      )}
     </div>
   );
 }
