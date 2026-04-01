@@ -94,22 +94,22 @@ export default function Header() {
                 </span>
                 <span className="text-[10px] font-semibold" style={{ color: "#333" }}>
                   <span className="t-en">Traders Store</span>
-                  <span className="t-bn">à¦Ÿà§à¦°à§‡à¦¡à¦¾à¦°à§à¦¸ à¦¸à§à¦Ÿà§‹à¦°</span>
+                  <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>ব্রেতা স্টোর</span>
                 </span>
               </div>
             </Link>
 
             {/* Delivery Location (desktop) */}
             <div className="hidden md:flex items-center flex-shrink-0 gap-1.5 px-2 py-1.5 cursor-pointer hover:bg-black/5 rounded-md">
-              <span className="text-xl">ðŸ‡§ðŸ‡©</span>
+              <span className="text-xl">🇧🇩</span>
               <div className="flex flex-col leading-tight">
                 <span className="text-[10px] text-gray-600">
                   <span className="t-en">Deliver to</span>
-                  <span className="t-bn">à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿</span>
+                  <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>ডেলিভারি</span>
                 </span>
                 <span className="text-xs font-bold text-gray-800 whitespace-nowrap">
                   <span className="t-en">Bangladesh</span>
-                  <span className="t-bn">à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶</span>
+                  <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>বান্গলাদেশ</span>
                 </span>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default function Header() {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder={isBn ? "à¦†à¦ªà¦¨à¦¿ à¦•à¦¿ à¦–à§à¦à¦œà¦›à§‡à¦¨?" : "What are you looking for?"}
+                    placeholder={isBn ? "আপনি কি খুঁজছেন?" : "What are you looking for?"}
                     className="flex-1 min-w-0 border-none rounded-l-[26px] rounded-r-none px-5 py-[10px] text-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-yellow-300/50"
                   />
                   <button
@@ -149,7 +149,7 @@ export default function Header() {
                 <i className={`fa ${isDark ? "fa-sun-o" : "fa-moon-o"}`} style={{ fontSize: 15 }} />
                 <span className="hidden lg:inline">
                   <span className="t-en">{isDark ? "LIGHT" : "DARK"}</span>
-                  <span className="t-bn">{isDark ? "à¦²à¦¾à¦‡à¦Ÿ" : "à¦¡à¦¾à¦°à§à¦•"}</span>
+                  <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>{isDark ? "লাইট" : "ডার্ক"}</span>
                 </span>
               </button>
 
@@ -158,11 +158,11 @@ export default function Header() {
                 onClick={toggleLang}
                 className="flex items-center gap-1.5 bg-transparent border-none px-3 py-1.5 rounded-lg font-bold text-[13px] cursor-pointer hover:bg-black/[.08] transition-colors whitespace-nowrap"
                 style={{ color: "#1a1a2e", minHeight: 40 }}
-                title={isBn ? "Switch to English" : "à¦¬à¦¾à¦‚à¦²à¦¾à¦¯à¦¼ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦•à¦°à§à¦¨"}
+                title={isBn ? "Switch to English" : "বাংলায় পরিবর্তন করুন"}
               >
                 <i className="fa fa-language" style={{ fontSize: 15 }} />
                 <span className="hidden lg:inline">
-                  {isBn ? "English" : "à¦¬à¦¾à¦‚à¦²à¦¾"}
+                  {isBn ? "English" : "বাংলা"}
                 </span>
               </button>
 
@@ -190,17 +190,17 @@ export default function Header() {
                         <Link href="/account" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 no-underline" onClick={() => setProfileOpen(false)}>
                           <i className="fa fa-user-circle text-gray-400 w-4" />
                           <span className="t-en">My Account</span>
-                          <span className="t-bn">à¦†à¦®à¦¾à¦° à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ</span>
+                          <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>আমার অ্যাকাউন্ট</span>
                         </Link>
                         <Link href="/orders" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 no-underline" onClick={() => setProfileOpen(false)}>
                           <i className="fa fa-shopping-bag text-gray-400 w-4" />
                           <span className="t-en">My Orders</span>
-                          <span className="t-bn">à¦†à¦®à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°</span>
+                          <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>আমার অর্নামা</span>
                         </Link>
                         <Link href="/seller/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 no-underline" onClick={() => setProfileOpen(false)}>
                           <i className="fa fa-store text-gray-400 w-4" />
                           <span className="t-en">Seller Dashboard</span>
-                          <span className="t-bn">à¦¸à§‡à¦²à¦¾à¦° à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡</span>
+                          <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>বিক্রি ড্যাশবোর্ড</span>
                         </Link>
                         <div className="border-t border-gray-100 my-1" />
                         <button
@@ -209,7 +209,7 @@ export default function Header() {
                         >
                           <i className="fa fa-sign-out w-4" />
                           <span className="t-en">Log Out</span>
-                          <span className="t-bn">à¦²à¦— à¦†à¦‰à¦Ÿ</span>
+                          <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>লগআউট</span>
                         </button>
                       </div>
                     )}
@@ -223,7 +223,7 @@ export default function Header() {
                     <UserIcon size={18} />
                     <span className="hidden lg:inline">
                       <span className="t-en">Log in</span>
-                      <span className="t-bn">à¦²à¦— à¦‡à¦¨</span>
+                      <span className="t-bn" style={{ fontFamily: '"Hind Siliguri", sans-serif' }}>লগইন</span>
                     </span>
                   </Link>
                 )}
