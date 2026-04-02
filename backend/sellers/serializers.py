@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Seller
+from .models import Seller, SellerPayout
 
 
 class SellerPublicSerializer(serializers.ModelSerializer):
@@ -43,3 +43,21 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 class SellerLoginSerializer(serializers.Serializer):
     email    = serializers.EmailField()
     password = serializers.CharField()
+
+
+class SellerPayoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SellerPayout
+        fields = (
+            "id",
+            "period_start",
+            "period_end",
+            "gross_amount",
+            "platform_fee",
+            "net_amount",
+            "status",
+            "reference",
+            "paid_at",
+            "created_at",
+        )
+        read_only_fields = fields

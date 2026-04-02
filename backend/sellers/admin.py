@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Seller
+from .models import Seller, SellerPayout
 
 
 @admin.register(Seller)
@@ -20,3 +20,12 @@ class SellerAdmin(admin.ModelAdmin):
         if "password" in form.changed_data:
             obj.set_password(form.cleaned_data["password"])
         super().save_model(request, obj, form, change)
+
+
+@admin.register(SellerPayout)
+class SellerPayoutAdmin(admin.ModelAdmin):
+    list_display = ("seller", "period_start", "period_end", "gross_amount", "net_amount", "status", "paid_at")
+    list_filter = ("status", "period_start", "period_end")
+    search_fields = ("seller__business_name", "seller__email", "reference")
+    autocomplete_fields = ("seller",)
+    readonly_fields = ("created_at", "updated_at")
