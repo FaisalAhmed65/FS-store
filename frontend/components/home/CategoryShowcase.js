@@ -10,13 +10,15 @@ import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
-import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 function CategoryBlock({ category }) {
   const { lang } = useLang();
   const isBn = lang === "bn";
   const children = category.children ?? category.subcategories ?? [];
   const scrollRef = useRef(null);
+  const viewAllHref = category.slug ? `/shop?category_slug=${category.slug}` : "/shop";
+
+  if (children.length === 0) return null;
 
   function scroll(dir) {
     scrollRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
@@ -33,7 +35,7 @@ function CategoryBlock({ category }) {
           {isBn && category.name_bn ? category.name_bn : category.name}
         </h3>
         <Link
-          href={`/shop?category_slug=${category.slug || category.id}`}
+          href={viewAllHref}
           className="text-sm font-semibold no-underline hover:underline"
           style={{ color: "#3b82f6" }}
         >
@@ -71,16 +73,18 @@ function CategoryBlock({ category }) {
           <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
           <div className="flex gap-4 py-1">
             {children.length > 0 ? (
-              children.map((sub) => (
+              children.map((sub) => {
+                const image = sub.icon || sub.image;
+                return (
                 <Link
                   key={sub.id}
                   href={`/shop?category_slug=${sub.slug || sub.id}`}
                   className="flex-shrink-0 w-36 no-underline text-center group"
                 >
                   <div className="w-36 h-36 rounded-lg overflow-hidden bg-gray-50 border border-gray-200 transition-all group-hover:border-blue-300 group-hover:shadow-md">
-                    {sub.image ? (
+                    {image ? (
                       <Image
-                        src={mediaUrl(sub.image)}
+                        src={mediaUrl(image)}
                         alt={isBn && sub.name_bn ? sub.name_bn : sub.name}
                         width={144}
                         height={144}
@@ -100,18 +104,9 @@ function CategoryBlock({ category }) {
                     {isBn && sub.name_bn ? sub.name_bn : sub.name}
                   </span>
                 </Link>
-              ))
-            ) : (
-              /* placeholders when no subcategories */
-              [1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex-shrink-0 w-36 text-center">
-                  <div className="w-36 h-36 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
-                    <i className="fa fa-image text-3xl text-gray-300" />
-                  </div>
-                  <span className="block mt-2 h-3 w-20 mx-auto rounded bg-gray-200" />
-                </div>
-              ))
-            )}
+                );
+              })
+            ) : null}
           </div>
         </div>
       </div>
@@ -121,10 +116,10 @@ function CategoryBlock({ category }) {
 
 export default function CategoryShowcase() {
   const { data, isLoading } = useSWR("cat-showcase", () =>
-    categoriesApi.showcase().then((r) => r.data?.results ?? r.data ?? [])
+    categoriesApi.tree().then((r) => r.data?.results ?? r.data ?? [])
   );
 
-  const categories = Array.isArray(data) && data.length ? data : FALLBACK_CATEGORIES;
+  const categories = Array.isArray(data) ? data : [];
 
   if (isLoading && categories.length === 0) {
     return (
@@ -136,6 +131,11 @@ export default function CategoryShowcase() {
 
   if (categories.length === 0) return null;
 
+  const hasNestedCategories = categories.some((cat) => (cat.children || []).length > 0);
+  const blocks = hasNestedCategories
+    ? categories
+    : [{ id: "all-backend-categories", name: "All Categories", children: categories }];
+
   return (
     <section className="py-6 w-full" style={{ background: "#fff" }}>
       <div className="homepage-shell">
@@ -144,7 +144,7 @@ export default function CategoryShowcase() {
           <span className="t-en">Shop by Category</span>
           <span className="t-bn">ক্যাটাগরি অনুযায়ী কেনাকাটা</span>
         </h2>
-        {categories.map((cat) => (
+        {blocks.map((cat) => (
           <CategoryBlock key={cat.id} category={cat} />
         ))}
       </div>

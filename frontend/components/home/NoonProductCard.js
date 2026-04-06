@@ -10,6 +10,8 @@ import { useLang } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import QuickViewModal from "@/components/ui/QuickViewModal";
+import { HeartIcon, MagnifyingGlassIcon, MinusIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
 const BADGE_COLORS = {
   bestseller: { bg: "#006c4f", label: "Best Seller", labelBn: "বেস্ট সেলার" },
@@ -40,7 +42,7 @@ export default function NoonProductCard({ product }) {
   const displayName = isBn && name_bn ? name_bn : name;
   const wishlisted = isWishlisted(id);
   const inCart = isInCart(id);
-  const cartItem = items.find((i) => i.product.id === id);
+  const cartItem = items.find((i) => Number(i.product.id) === Number(id));
 
   // Determine top badge
   let badge = null;
@@ -61,10 +63,14 @@ export default function NoonProductCard({ product }) {
     if (newQty < 1) updateQty(id, 0); // removes
     else updateQty(id, newQty);
   }
-  function handleWishlist(e) {
+  async function handleWishlist(e) {
     e.preventDefault();
     e.stopPropagation();
-    toggle(product);
+    try {
+      await toggle(product);
+    } catch {
+      // Keep the card responsive; WishlistContext rolls back failed optimistic updates.
+    }
   }
 
   return (
@@ -81,11 +87,21 @@ export default function NoonProductCard({ product }) {
 
       {/* Wishlist heart */}
       <button
+        type="button"
         className="absolute top-2 right-2 bg-white rounded-md w-8 h-8 flex items-center justify-center z-10 shadow-sm hover:scale-110 transition-transform border-none cursor-pointer"
-        aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        aria-label={
+          wishlisted
+            ? (isBn ? "উইশলিস্ট থেকে সরান" : "Remove from wishlist")
+            : (isBn ? "উইশলিস্টে যোগ করুন" : "Add to wishlist")
+        }
+        aria-pressed={wishlisted}
         onClick={handleWishlist}
       >
-        <i className={`fa ${wishlisted ? "fa-heart text-red-500" : "fa-heart-o text-gray-500"} text-base`} />
+        {wishlisted ? (
+          <HeartSolid className="w-5 h-5 text-red-500" />
+        ) : (
+          <HeartIcon className="w-5 h-5 text-gray-500 group-hover:text-red-500" />
+        )}
       </button>
 
       <div className="noon-image-wrap">
@@ -100,13 +116,57 @@ export default function NoonProductCard({ product }) {
           />
         </Link>
         <button
-          className="noon-quick-add"
+          type="button"
+          className="noon-image-quick-overlay"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickViewOpen(true); }}
-          aria-label="Quick view product"
-          title="Quick View"
+          aria-label={isBn ? "পণ্যের কুইক ভিউ" : "Quick view product"}
+          title={isBn ? "কুইক ভিউ" : "Quick View"}
         >
-          <i className="fa fa-search text-gray-600 text-base" />
+          <span className="noon-image-quick-icon">
+            <MagnifyingGlassIcon className="w-8 h-8" />
+          </span>
         </button>
+
+        {inCart ? (
+          <div className="noon-image-qty-ctrl" aria-label="Cart quantity controls">
+            <button
+              type="button"
+              className="noon-image-qty-btn noon-image-qty-remove"
+              onClick={(e) => handleQtyChange(e, -1)}
+              aria-label={
+                cartItem?.quantity === 1
+                  ? (isBn ? "কার্ট থেকে সরান" : "Remove from cart")
+                  : (isBn ? "একটি কমান" : "Remove one")
+              }
+            >
+              {cartItem?.quantity === 1 ? (
+                <TrashIcon className="w-4 h-4" />
+              ) : (
+                <MinusIcon className="w-4 h-4" />
+              )}
+            </button>
+            <span className="noon-image-qty-num">{cartItem?.quantity}</span>
+            <button
+              type="button"
+              className="noon-image-qty-btn noon-image-qty-add"
+              onClick={(e) => handleQtyChange(e, 1)}
+              aria-label={isBn ? "একটি বাড়ান" : "Add one"}
+            >
+              <PlusIcon className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="noon-image-add-btn"
+            onClick={handleAddToCart}
+            disabled={stock_quantity === 0}
+            aria-label={isBn ? "কার্টে যোগ করুন" : "Add to cart"}
+            title={isBn ? "কার্টে যোগ করুন" : "Add to cart"}
+          >
+            <PlusIcon className="w-6 h-6" />
+          </button>
+        )}
       </div>
 
       <Link href={href} className="no-underline text-inherit flex flex-col flex-1">
@@ -182,7 +242,7 @@ export default function NoonProductCard({ product }) {
       </Link>
 
       {/* Add to cart / qty controls */}
-      <div className="mt-2">
+      <div className="hidden">
         {inCart ? (
           <div className="noon-qty-ctrl">
             <button
@@ -227,7 +287,7 @@ export default function NoonProductCard({ product }) {
       {get_in && (
         <div className="noon-get-in-badge">
           <i className="fa fa-bolt text-[11px] text-yellow-400" />
-          <span>GET IN</span>
+          <span>{isBn ? "পেতে সময়" : "GET IN"}</span>
           <span className="noon-get-in-text">
             <span className="t-en">{get_in}</span>
             {get_in_bn && <span className="t-bn">{get_in_bn}</span>}

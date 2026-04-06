@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
-import { productsApi } from "@/lib/api";
+import { categoriesApi, productsApi } from "@/lib/api";
 import { discountPct, formatPrice, mediaUrl, productHref } from "@/lib/utils";
-import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallbackData";
 
 function useCountdown(hours = 12) {
   const target = useMemo(() => Date.now() + hours * 3600_000, [hours]);
@@ -26,28 +25,51 @@ function useCountdown(hours = 12) {
 }
 
 function ReasonsColumn() {
-  const tiles = [
-    { category: FALLBACK_CATEGORIES[0], title: "Deals in tech", href: "/shop?category_slug=electronics" },
-    { category: FALLBACK_CATEGORIES[1], title: "Fresh fashion", href: "/shop?category_slug=fashion" },
-    { category: FALLBACK_CATEGORIES[2], title: "Home upgrades", href: "/shop?category_slug=home-living" },
-    { category: FALLBACK_CATEGORIES[3], title: "Beauty picks", href: "/shop?category_slug=beauty" },
-  ];
+  const { data, isLoading } = useSWR("reasons-backend-categories", () =>
+    categoriesApi.list({ root_only: true }).then((r) => r.data?.results ?? r.data ?? [])
+  );
+  const tiles = Array.isArray(data) ? data.slice(0, 4) : [];
 
   return (
     <div className="h-full">
       <h3 className="combined-heading text-lg font-extrabold mb-3">More reasons to shop</h3>
       <div className="grid grid-cols-2 gap-3">
-        {tiles.map((tile) => (
-          <Link key={tile.title} href={tile.href} className="reason-card-compact block overflow-hidden no-underline">
+        {isLoading && !tiles.length ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="reason-card-compact block overflow-hidden animate-pulse">
+              <div className="aspect-[4/3] bg-gray-100" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 w-20 bg-gray-100 rounded" />
+                <div className="h-3 w-16 bg-gray-100 rounded" />
+              </div>
+            </div>
+          ))
+        ) : tiles.length === 0 ? (
+          <div className="col-span-2 text-sm text-gray-500">No backend categories yet</div>
+        ) : tiles.map((category) => {
+          const image = category.icon || category.image;
+          return (
+          <Link
+            key={category.id}
+            href={`/shop?category_slug=${category.slug || category.id}`}
+            className="reason-card-compact block overflow-hidden no-underline"
+          >
             <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-              <img src={mediaUrl(tile.category.image)} alt={tile.title} className="w-full h-full object-cover" loading="lazy" />
+              {image ? (
+                <img src={mediaUrl(image)} alt={category.name} className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <i className="fa fa-th-large text-3xl text-gray-300" />
+                </div>
+              )}
             </div>
             <div className="p-3">
-              <h4 className="m-0 text-sm font-extrabold text-gray-900">{tile.title}</h4>
-              <p className="m-0 mt-1 text-xs text-gray-500">Shop {tile.category.name}</p>
+              <h4 className="m-0 text-sm font-extrabold text-gray-900">{category.name}</h4>
+              <p className="m-0 mt-1 text-xs text-gray-500">Shop category</p>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -77,7 +99,7 @@ function MegaDealsColumn() {
     productsApi.deals().then((r) => r.data?.results ?? r.data ?? [])
   );
   const apiDeals = Array.isArray(data) ? data : [];
-  const deals = (apiDeals.length ? apiDeals : FALLBACK_PRODUCTS).filter((product) => product.is_deal || product.compare_price).slice(0, 4);
+  const deals = apiDeals.filter((product) => product.is_deal || product.compare_price).slice(0, 4);
 
   return (
     <div className="h-full">
@@ -110,6 +132,10 @@ function MegaDealsColumn() {
               </span>
             </div>
           ))}
+        </div>
+      ) : deals.length === 0 ? (
+        <div className="deal-mini-empty">
+          No backend deals yet
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
