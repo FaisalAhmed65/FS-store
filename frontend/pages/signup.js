@@ -36,6 +36,7 @@ export default function SignupPage() {
         first_name: form.first_name,
         last_name:  form.last_name,
         password:   form.password,
+        password2:  form.confirm_password,
       });
       router.push("/");
     } catch (err) {

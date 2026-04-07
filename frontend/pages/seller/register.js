@@ -38,6 +38,7 @@ export default function SellerRegisterPage() {
         business_name: form.business_name,
         email:         form.email,
         password:      form.password,
+        password2:     form.confirm,
         phone:         form.phone,
         address:       form.address,
         description:   form.description,

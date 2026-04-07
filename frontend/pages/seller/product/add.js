@@ -10,7 +10,7 @@ import useSWR from "swr";
 import { sellerApi, categoriesApi } from "@/lib/api";
 import SellerLayout from "@/components/seller/SellerLayout";
 
-const SHOW_FREE_DELIVERY = process.env.NEXT_PUBLIC_SELLER_SHOW_FREE_DELIVERY === "true";
+const SHOW_FREE_DELIVERY = true;
 
 export default function AddProductPage() {
   const router = useRouter();

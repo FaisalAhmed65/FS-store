@@ -12,7 +12,7 @@ import {
   ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 
-const SHOW_ORDERS = process.env.NEXT_PUBLIC_SELLER_SHOW_ORDERS === "true";
+const SHOW_ORDERS = true;
 
 const navItems = [
   { href: "/seller/dashboard",     label: "Dashboard",   icon: Squares2X2Icon },

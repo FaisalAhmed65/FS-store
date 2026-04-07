@@ -57,7 +57,8 @@ class SellerLoginView(APIView):
 
 class SellerProfileView(APIView):
     """Return authenticated seller's profile. Pass seller_id via header X-Seller-Id or JWT."""
-    permission_classes = (permissions.AllowAny,)
+    permission_classes    = (permissions.AllowAny,)
+    authentication_classes = []
 
     def _get_seller(self, request):
         from jose import jwt as jose_jwt, JWTError
@@ -91,7 +92,8 @@ class SellerProfileView(APIView):
 
 
 class SellerDashboardView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes    = (permissions.AllowAny,)
+    authentication_classes = []
 
     def _get_seller(self, request):
         from jose import jwt as jose_jwt, JWTError
@@ -134,7 +136,8 @@ class SellerDashboardView(APIView):
 
 
 class SellerProductListCreateView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes    = (permissions.AllowAny,)
+    authentication_classes = []
 
     def _get_seller(self, request):
         from jose import jwt as jose_jwt, JWTError
@@ -169,7 +172,8 @@ class SellerProductListCreateView(APIView):
 
 
 class SellerProductDetailView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes    = (permissions.AllowAny,)
+    authentication_classes = []
 
     def _get_seller(self, request):
         from jose import jwt as jose_jwt, JWTError
@@ -221,3 +225,48 @@ class SellerProductDetailView(APIView):
         product.seller = None
         product.save()
         return Response(status=204)
+
+
+class SellerOrderListView(APIView):
+    permission_classes    = (permissions.AllowAny,)
+    authentication_classes = []
+
+    def _get_seller(self, request):
+        from jose import jwt as jose_jwt, JWTError
+        from django.conf import settings
+        auth = request.headers.get("Authorization", "")
+        if not auth.startswith("Bearer "):
+            return None
+        token = auth.split(" ", 1)[1]
+        try:
+            payload = jose_jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            return Seller.objects.get(id=payload["sub"]) if payload.get("type") == "seller" else None
+        except (JWTError, Seller.DoesNotExist):
+            return None
+
+    def get(self, request):
+        seller = self._get_seller(request)
+        if not seller:
+            return Response({"error": "Unauthorized."}, status=401)
+        from orders.models import OrderItem
+        items = (
+            OrderItem.objects
+            .filter(seller=seller)
+            .select_related("order")
+            .order_by("-order__created_at")
+        )
+        result = []
+        for item in items:
+            o = item.order
+            result.append({
+                "order_id":     o.id,
+                "status":       o.status,
+                "customer":     o.customer_name,
+                "product_name": item.product_name,
+                "product_image": item.product_image,
+                "quantity":     item.quantity,
+                "unit_price":   str(item.unit_price),
+                "subtotal":     str(item.subtotal),
+                "created_at":   o.created_at.isoformat(),
+            })
+        return Response(result)

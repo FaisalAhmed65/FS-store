@@ -10,7 +10,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = Customer
-        fields = ("id", "username", "email", "password", "password2", "phone")
+        fields = ("id", "username", "email", "first_name", "last_name", "password", "password2", "phone")
 
     def validate(self, data):
         if data["password"] != data["password2"]:
@@ -20,8 +20,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password2")
         user = Customer.objects.create_user(**validated_data)
-        user.is_active = False   # Account inactive until OTP email verified
-        user.save(update_fields=["is_active"])
         return user
 
 

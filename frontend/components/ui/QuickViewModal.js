@@ -2,16 +2,22 @@
  * components/ui/QuickViewModal.js
  * Odoo-style quick view modal for product cards.
  * Shows image, name, price, discount, short description, stock and CTA buttons.
+ * Rendered via React Portal to document.body — prevents layout-blink from card transforms.
  */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice, discountPct, mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 
-export default function QuickViewModal({ product, onClose }) {
+export default function QuickViewModal({ product, onClose, onAddToCart }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { lang } = useLang();
   const isBn = lang === "bn";
+  const { addItem } = useCart();
 
   // Close on Escape key
   useEffect(() => {
@@ -26,7 +32,7 @@ export default function QuickViewModal({ product, onClose }) {
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  if (!product) return null;
+  if (!product || !mounted) return null;
 
   const {
     slug, name, name_bn, image, price, compare_price,
@@ -45,7 +51,13 @@ export default function QuickViewModal({ product, onClose }) {
   // Star rating helper
   const stars = Math.round(Number(rating_avg) || 0);
 
-  return (
+  function handleAddToCart() {
+    if (onAddToCart) onAddToCart(product);
+    else addItem(product, 1);
+    onClose();
+  }
+
+  const modal = (
     <div
       className="qv-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
@@ -166,7 +178,7 @@ export default function QuickViewModal({ product, onClose }) {
               <button
                 className="qv-btn-secondary"
                 disabled={stock_quantity === 0}
-                onClick={() => { /* TODO: add to cart */ onClose(); }}
+                onClick={handleAddToCart}
               >
                 <i className="fa fa-shopping-cart mr-1.5" />
                 {isBn ? "কার্টে যোগ করুন" : "Add to Cart"}
@@ -177,4 +189,6 @@ export default function QuickViewModal({ product, onClose }) {
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modal, document.body);
 }

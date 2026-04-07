@@ -76,6 +76,11 @@ class Product(models.Model):
     deal_discount_pct = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     deal_end_date     = models.DateTimeField(null=True, blank=True)
 
+    # Sales & Ranking
+    sold_recently         = models.IntegerField(default=0, help_text="Number of units sold recently (shown on card)")
+    category_rank         = models.IntegerField(default=0, help_text="Rank within the product's category (0 = unranked)")
+    category_rank_display = models.CharField(max_length=100, blank=True, help_text="Human-readable rank label, e.g. '#2 in Gaming'")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

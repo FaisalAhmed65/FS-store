@@ -8,7 +8,7 @@ import { sellerApi, categoriesApi } from "@/lib/api";
 import SellerLayout from "@/components/seller/SellerLayout";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
-const SHOW_FREE_DELIVERY = process.env.NEXT_PUBLIC_SELLER_SHOW_FREE_DELIVERY === "true";
+const SHOW_FREE_DELIVERY = true;
 
 export default function EditProductPage() {
   const router = useRouter();

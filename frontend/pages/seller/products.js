@@ -68,7 +68,7 @@ export default function SellerProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {products.map((p) => (
+                {(products || []).map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 flex items-center gap-3">
                       <div className="relative w-10 h-10 shrink-0 bg-gray-100 rounded overflow-hidden">

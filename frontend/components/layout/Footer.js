@@ -1,6 +1,6 @@
 ﻿/**
  * components/layout/Footer.js
- * TRD Store footer â€” matches Odoo custom_footer.
+ * TRD Store footer - matches Odoo custom_footer.
  * Features: Bengali/English bilingual text, Bangladesh payment methods.
  */
 import Link from "next/link";
@@ -9,68 +9,68 @@ import { useLang } from "@/contexts/LanguageContext";
 const footerColumns = [
   {
     title: "Gaming",
-    titleBn: "à¦—à§‡à¦®à¦¿à¦‚",
+    titleBn: "\u0997\u09c7\u09ae\u09bf\u0982",
     links: [
-      { label: "Gaming Monitors", labelBn: "à¦—à§‡à¦®à¦¿à¦‚ à¦®à¦¨à¦¿à¦Ÿà¦°", href: "/shop?q=gaming+monitors" },
-      { label: "Gaming Consoles", labelBn: "à¦—à§‡à¦®à¦¿à¦‚ à¦•à¦¨à¦¸à§‹à¦²", href: "/shop?q=gaming+consoles" },
-      { label: "Gaming Accessories", labelBn: "à¦—à§‡à¦®à¦¿à¦‚ à¦†à§à¦¯à¦•à§à¦¸à§‡à¦¸à¦°à¦¿à¦œ", href: "/shop?q=gaming+accessories" },
-      { label: "PC Gaming", labelBn: "à¦ªà¦¿à¦¸à¦¿ à¦—à§‡à¦®à¦¿à¦‚", href: "/shop?q=pc+gaming" },
-      { label: "VR Gaming", labelBn: "à¦­à¦¿à¦†à¦° à¦—à§‡à¦®à¦¿à¦‚", href: "/shop?q=vr+gaming" },
+      { label: "Gaming Monitors",    labelBn: "\u0997\u09c7\u09ae\u09bf\u0982 \u09ae\u09a8\u09bf\u099f\u09b0",       href: "/shop?q=gaming+monitors" },
+      { label: "Gaming Consoles",    labelBn: "\u0997\u09c7\u09ae\u09bf\u0982 \u0995\u09a8\u09b8\u09cb\u09b2",       href: "/shop?q=gaming+consoles" },
+      { label: "Gaming Accessories", labelBn: "\u0997\u09c7\u09ae\u09bf\u0982 \u0986\u09a8\u09c1\u09b7\u0999\u09cd\u0997\u09bf\u0995",   href: "/shop?q=gaming+accessories" },
+      { label: "PC Gaming",          labelBn: "\u09aa\u09bf\u09b8\u09bf \u0997\u09c7\u09ae\u09bf\u0982",         href: "/shop?q=pc+gaming" },
+      { label: "VR Gaming",          labelBn: "\u09ad\u09bf\u0986\u09b0 \u0997\u09c7\u09ae\u09bf\u0982",        href: "/shop?q=vr+gaming" },
     ],
   },
   {
     title: "Toys & Games",
-    titleBn: "à¦–à§‡à¦²à¦¨à¦¾ à¦“ à¦—à§‡à¦®à¦¸",
+    titleBn: "\u0996\u09c7\u09b2\u09a8\u09be \u0993 \u0997\u09c7\u09ae\u09b8",
     links: [
-      { label: "Action Figures", labelBn: "à¦…à§à¦¯à¦¾à¦•à¦¶à¦¨ à¦«à¦¿à¦—à¦¾à¦°", href: "/shop?q=action+figures" },
-      { label: "Board Games", labelBn: "à¦¬à§‹à¦°à§à¦¡ à¦—à§‡à¦®à¦¸", href: "/shop?q=board+games" },
-      { label: "Puzzles", labelBn: "à¦ªà¦¾à¦œà¦²", href: "/shop?q=puzzles" },
-      { label: "Educational Toys", labelBn: "à¦¶à¦¿à¦•à§à¦·à¦¾à¦®à§‚à¦²à¦• à¦–à§‡à¦²à¦¨à¦¾", href: "/shop?q=educational+toys" },
-      { label: "Outdoor Toys", labelBn: "à¦†à¦‰à¦Ÿà¦¡à§‹à¦° à¦–à§‡à¦²à¦¨à¦¾", href: "/shop?q=outdoor+toys" },
+      { label: "Action Figures",   labelBn: "\u0985\u09cd\u09af\u09be\u0995\u09b6\u09a8 \u09ab\u09bf\u0997\u09be\u09b0",       href: "/shop?q=action+figures" },
+      { label: "Board Games",      labelBn: "\u09ac\u09cb\u09b0\u09cd\u09a1 \u0997\u09c7\u09ae\u09b8",           href: "/shop?q=board+games" },
+      { label: "Puzzles",          labelBn: "\u09aa\u09be\u099c\u09b2",                  href: "/shop?q=puzzles" },
+      { label: "Educational Toys", labelBn: "\u09b6\u09bf\u0995\u09cd\u09b7\u09be\u09ae\u09c2\u09b2\u0995 \u0996\u09c7\u09b2\u09a8\u09be",    href: "/shop?q=educational+toys" },
+      { label: "Outdoor Toys",     labelBn: "\u0986\u0989\u099f\u09a1\u09cb\u09b0 \u0996\u09c7\u09b2\u09a8\u09be",        href: "/shop?q=outdoor+toys" },
     ],
   },
   {
     title: "Stationery",
-    titleBn: "à¦¸à§à¦Ÿà§‡à¦¶à¦¨à¦¾à¦°à¦¿",
+    titleBn: "\u09b8\u09cd\u099f\u09c7\u09b6\u09a8\u09be\u09b0\u09bf",
     links: [
-      { label: "Pens & Pencils", labelBn: "à¦•à¦²à¦® à¦“ à¦ªà§‡à¦¨à§à¦¸à¦¿à¦²", href: "/shop?q=pens" },
-      { label: "Notebooks", labelBn: "à¦¨à§‹à¦Ÿà¦¬à§à¦•", href: "/shop?q=notebooks" },
-      { label: "Art Supplies", labelBn: "à¦†à¦°à§à¦Ÿ à¦¸à¦¾à¦ªà§à¦²à¦¾à¦‡", href: "/shop?q=art+supplies" },
-      { label: "Office Supplies", labelBn: "à¦…à¦«à¦¿à¦¸ à¦¸à¦¾à¦ªà§à¦²à¦¾à¦‡", href: "/shop?q=office+supplies" },
-      { label: "Craft Supplies", labelBn: "à¦•à§à¦°à§à¦¯à¦¾à¦«à¦Ÿ à¦¸à¦¾à¦ªà§à¦²à¦¾à¦‡", href: "/shop?q=craft+supplies" },
+      { label: "Pens & Pencils",  labelBn: "\u0995\u09b2\u09ae \u0993 \u09aa\u09c7\u09a8\u09cd\u09b8\u09bf\u09b2",  href: "/shop?q=pens" },
+      { label: "Notebooks",       labelBn: "\u09a8\u09cb\u099f\u09ac\u09c1\u0995",           href: "/shop?q=notebooks" },
+      { label: "Art Supplies",    labelBn: "\u0986\u09b0\u09cd\u099f \u09b8\u09be\u09aa\u09cd\u09b2\u09be\u0987",    href: "/shop?q=art+supplies" },
+      { label: "Office Supplies", labelBn: "\u0985\u09ab\u09bf\u09b8 \u09b8\u09be\u09aa\u09cd\u09b2\u09be\u0987",   href: "/shop?q=office+supplies" },
+      { label: "Craft Supplies",  labelBn: "\u0995\u09cd\u09b0\u09cd\u09af\u09be\u09ab\u099f \u09b8\u09be\u09aa\u09cd\u09b2\u09be\u0987", href: "/shop?q=craft+supplies" },
     ],
   },
   {
     title: "Top Brands",
-    titleBn: "à¦Ÿà¦ª à¦¬à§à¦°à§à¦¯à¦¾à¦¨à§à¦¡",
+    titleBn: "\u09b6\u09c0\u09b0\u09cd\u09b7 \u09ac\u09cd\u09b0\u09cd\u09af\u09be\u09a8\u09cd\u09a1",
     links: [
-      { label: "Sony", labelBn: "à¦¸à¦¨à¦¿", href: "/shop?brand=sony" },
-      { label: "Samsung", labelBn: "à¦¸à§à¦¯à¦¾à¦®à¦¸à¦¾à¦‚", href: "/shop?brand=samsung" },
-      { label: "Apple", labelBn: "à¦…à§à¦¯à¦¾à¦ªà¦²", href: "/shop?brand=apple" },
-      { label: "Logitech", labelBn: "à¦²à¦œà¦¿à¦Ÿà§‡à¦•", href: "/shop?brand=logitech" },
-      { label: "Razer", labelBn: "à¦°à§‡à¦œà¦¾à¦°", href: "/shop?brand=razer" },
+      { label: "Sony",     labelBn: "\u09b8\u09a8\u09bf",     href: "/shop?brand=sony" },
+      { label: "Samsung",  labelBn: "\u09b8\u09cd\u09af\u09be\u09ae\u09b8\u09be\u0982", href: "/shop?brand=samsung" },
+      { label: "Apple",    labelBn: "\u0985\u09cd\u09af\u09be\u09aa\u09b2",  href: "/shop?brand=apple" },
+      { label: "Logitech", labelBn: "\u09b2\u099c\u09bf\u099f\u09c7\u0995",  href: "/shop?brand=logitech" },
+      { label: "Razer",    labelBn: "\u09b0\u09c7\u099c\u09be\u09b0",   href: "/shop?brand=razer" },
     ],
   },
   {
     title: "Discover Now",
-    titleBn: "à¦à¦–à¦¨à¦‡ à¦†à¦¬à¦¿à¦·à§à¦•à¦¾à¦° à¦•à¦°à§à¦¨",
+    titleBn: "\u098f\u0996\u09a8\u0987 \u0986\u09ac\u09bf\u09b7\u09cd\u0995\u09be\u09b0 \u0995\u09b0\u09c1\u09a8",
     links: [
-      { label: "Flash Deals", labelBn: "à¦«à§à¦²à§à¦¯à¦¾à¦¶ à¦¡à¦¿à¦²", href: "/shop?filter=deals" },
-      { label: "New Arrivals", labelBn: "à¦¨à¦¤à§à¦¨ à¦†à¦—à¦®à¦¨", href: "/shop?filter=new-arrivals" },
-      { label: "Bestsellers", labelBn: "à¦¬à§‡à¦¸à§à¦Ÿà¦¸à§‡à¦²à¦¾à¦°", href: "/shop?filter=bestsellers" },
-      { label: "Free Delivery", labelBn: "à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿", href: "/shop?filter=free-delivery" },
-      { label: "Sell on TRD", labelBn: "à¦Ÿà¦¿à¦†à¦°à¦¡à¦¿à¦¤à§‡ à¦¬à¦¿à¦•à§à¦°à¦¿ à¦•à¦°à§à¦¨", href: "/seller/register" },
+      { label: "Flash Deals",   labelBn: "\u09ab\u09cd\u09b2\u09cd\u09af\u09be\u09b6 \u09a1\u09bf\u09b2",          href: "/shop?filter=deals" },
+      { label: "New Arrivals",  labelBn: "\u09a8\u09a4\u09c1\u09a8 \u0986\u0997\u09ae\u09a8",            href: "/shop?filter=new-arrivals" },
+      { label: "Bestsellers",   labelBn: "\u09ac\u09c7\u09b8\u09cd\u099f\u09b8\u09c7\u09b2\u09be\u09b0",           href: "/shop?filter=bestsellers" },
+      { label: "Free Delivery", labelBn: "\u09ab\u09cd\u09b0\u09bf \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",        href: "/shop?filter=free-delivery" },
+      { label: "Sell on TRD",   labelBn: "\u099f\u09bf\u0986\u09b0\u09a1\u09bf\u09a4\u09c7 \u09ac\u09bf\u0995\u09cd\u09b0\u09bf \u0995\u09b0\u09c1\u09a8", href: "/seller/register" },
     ],
   },
   {
     title: "Popular",
-    titleBn: "à¦œà¦¨à¦ªà§à¦°à¦¿à¦¯à¦¼",
+    titleBn: "\u099c\u09a8\u09aa\u09cd\u09b0\u09bf\u09af\u09bc",
     links: [
-      { label: "Smart Watches", labelBn: "à¦¸à§à¦®à¦¾à¦°à§à¦Ÿ à¦“à¦¯à¦¼à¦¾à¦š", href: "/shop?q=smart+watches" },
-      { label: "Headphones", labelBn: "à¦¹à§‡à¦¡à¦«à§‹à¦¨", href: "/shop?q=headphones" },
-      { label: "Keyboards", labelBn: "à¦•à§€à¦¬à§‹à¦°à§à¦¡", href: "/shop?q=keyboards" },
-      { label: "Mice", labelBn: "à¦®à¦¾à¦‰à¦¸", href: "/shop?q=mice" },
-      { label: "Speakers", labelBn: "à¦¸à§à¦ªà¦¿à¦•à¦¾à¦°", href: "/shop?q=speakers" },
+      { label: "Smart Watches", labelBn: "\u09b8\u09cd\u09ae\u09be\u09b0\u09cd\u099f \u0993\u09af\u09bc\u09be\u099a", href: "/shop?q=smart+watches" },
+      { label: "Headphones",    labelBn: "\u09b9\u09c7\u09a1\u09ab\u09cb\u09a8",        href: "/shop?q=headphones" },
+      { label: "Keyboards",     labelBn: "\u0995\u09c0\u09ac\u09cb\u09b0\u09cd\u09a1",       href: "/shop?q=keyboards" },
+      { label: "Mice",          labelBn: "\u09ae\u09be\u0989\u09b8",           href: "/shop?q=mice" },
+      { label: "Speakers",      labelBn: "\u09b8\u09cd\u09aa\u09bf\u0995\u09be\u09b0",       href: "/shop?q=speakers" },
     ],
   },
 ];
@@ -83,10 +83,10 @@ const socialLinks = [
 ];
 
 const policyLinks = [
-  { label: "Terms & Conditions", labelBn: "à¦¶à¦°à§à¦¤à¦¾à¦¬à¦²à§€", href: "#" },
-  { label: "Privacy Policy", labelBn: "à¦—à§‹à¦ªà¦¨à§€à¦¯à¦¼à¦¤à¦¾ à¦¨à§€à¦¤à¦¿", href: "#" },
-  { label: "Warranty Policy", labelBn: "à¦“à¦¯à¦¼à¦¾à¦°à§‡à¦¨à§à¦Ÿà¦¿ à¦¨à§€à¦¤à¦¿", href: "#" },
-  { label: "Return Policy", labelBn: "à¦«à§‡à¦°à¦¤ à¦¨à§€à¦¤à¦¿", href: "#" },
+  { label: "Terms & Conditions", labelBn: "\u09b6\u09b0\u09cd\u09a4\u09be\u09ac\u09b2\u09c0", href: "#" },
+  { label: "Privacy Policy",     labelBn: "\u0997\u09cb\u09aa\u09a8\u09c0\u09af\u09bc\u09a4\u09be \u09a8\u09c0\u09a4\u09bf", href: "#" },
+  { label: "Warranty Policy",    labelBn: "\u0993\u09af\u09bc\u09be\u09b0\u09c7\u09a8\u09cd\u099f\u09bf \u09a8\u09c0\u09a4\u09bf", href: "#" },
+  { label: "Return Policy",      labelBn: "\u09ab\u09c7\u09b0\u09a4 \u09a8\u09c0\u09a4\u09bf", href: "#" },
 ];
 
 // Bangladesh-specific payment icons (text badges, Font Awesome fallbacks)
@@ -138,8 +138,7 @@ export default function Footer() {
           {/* app store */}
           <div>
             <h4 className="text-white text-sm font-bold mb-3">
-              <span className="t-en">Shop on the Go</span>
-              <span className="t-bn">à¦®à§‹à¦¬à¦¾à¦‡à¦²à§‡ à¦•à§‡à¦¨à¦¾à¦•à¦¾à¦Ÿà¦¾ à¦•à¦°à§à¦¨</span>
+              {isBn ? "\u09ae\u09cb\u09ac\u09be\u0987\u09b2\u09c7 \u0995\u09c7\u09a8\u09be\u0995\u09be\u099f\u09be \u0995\u09b0\u09c1\u09a8" : "Shop on the Go"}
             </h4>
             <div className="flex gap-2">
               <a
@@ -150,8 +149,7 @@ export default function Footer() {
                 <i className="fa fa-apple text-lg" />
                 <span>
                   <span className="block text-[9px] text-gray-400 leading-none">
-                    <span className="t-en">Download on the</span>
-                    <span className="t-bn">à¦¡à¦¾à¦‰à¦¨à¦²à§‹à¦¡ à¦•à¦°à§à¦¨</span>
+                    {isBn ? "\u09a1\u09be\u0989\u09a8\u09b2\u09cb\u09a1 \u0995\u09b0\u09c1\u09a8" : "Download on the"}
                   </span>
                   App Store
                 </span>
@@ -173,8 +171,7 @@ export default function Footer() {
           {/* social */}
           <div>
             <h4 className="text-white text-sm font-bold mb-3">
-              <span className="t-en">Connect with Us</span>
-              <span className="t-bn">à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¸à¦¾à¦¥à§‡ à¦¯à§‹à¦— à¦¦à¦¿à¦¨</span>
+              {isBn ? "\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09b8\u09be\u09a5\u09c7 \u09af\u09cb\u0997 \u09a6\u09bf\u09a8" : "Connect with Us"}
             </h4>
             <div className="flex gap-3">
               {socialLinks.map((s) => (
@@ -194,23 +191,23 @@ export default function Footer() {
           {/* BD Payment Methods */}
           <div>
             <h4 className="text-white text-sm font-bold mb-3">
-              <span className="t-en">Payment Methods</span>
-              <span className="t-bn">à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦ªà¦¦à§à¦§à¦¤à¦¿</span>
+              {isBn ? "\u09aa\u09c7\u09ae\u09c7\u09a8\u09cd\u099f \u09aa\u09a6\u09cd\u09a7\u09a4\u09bf" : "Payment Methods"}
             </h4>
             <div className="flex flex-wrap gap-2 items-center">
-              {/* Bangladesh Mobile Banking */}
               <PaymentBadge label="bKash" bg="#e40084" />
               <PaymentBadge label="Nagad" bg="#f05829" />
               <PaymentBadge label="Rocket" bg="#7b1fa2" />
-              {/* Cards */}
               <span title="Visa" className="text-gray-400">
                 <i className="fa fa-cc-visa text-2xl" />
               </span>
               <span title="Mastercard" className="text-gray-400">
                 <i className="fa fa-cc-mastercard text-2xl" />
               </span>
-              {/* COD */}
-              <PaymentBadge label={isBn ? "à¦•à§à¦¯à¦¾à¦¶ à¦…à¦¨ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿" : "Cash on Delivery"} bg="#1a6e2e" icon="fa-money" />
+              <PaymentBadge
+                label={isBn ? "\u0995\u09cd\u09af\u09be\u09b6 \u0985\u09a8 \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf" : "Cash on Delivery"}
+                bg="#1a6e2e"
+                icon="fa-money"
+              />
             </div>
           </div>
         </div>
@@ -219,14 +216,10 @@ export default function Footer() {
       {/* bottom bar */}
       <div className="border-t border-gray-800 w-full" style={{ background: "#060a14" }}>
         <div className="w-full px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-          {/* copyright */}
           <span className="text-xs text-gray-500">
-            Â© {new Date().getFullYear()} TRD Store.{" "}
-            <span className="t-en">All rights reserved.</span>
-            <span className="t-bn">à¦¸à¦°à§à¦¬à¦¸à§à¦¬à¦¤à§à¦¬ à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤à¥¤</span>
+            &copy; {new Date().getFullYear()} TRD Store.{" "}
+            {isBn ? "\u09b8\u09b0\u09cd\u09ac\u09b8\u09cd\u09ac\u09a4\u09cd\u09ac \u09b8\u0982\u09b0\u0995\u09cd\u09b7\u09bf\u09a4\u09f7" : "All rights reserved."}
           </span>
-
-          {/* policy links */}
           <div className="flex items-center gap-4 flex-wrap">
             {policyLinks.map((p) => (
               <Link

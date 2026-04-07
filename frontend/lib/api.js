@@ -54,6 +54,12 @@ api.interceptors.response.use(
       original._retry = true;
       isRefreshing = true;
 
+      // Never use customer refresh to retry seller endpoints
+      if (original.url?.startsWith("/sellers")) {
+        isRefreshing = false;
+        return Promise.reject(err);
+      }
+
       const refresh = Cookies.get("trd_refresh");
       if (!refresh) {
         isRefreshing = false;
@@ -159,6 +165,14 @@ export const sellerApi = {
     delete: (id) => {
       const token = Cookies.get("trd_seller_access");
       return api.delete(`/sellers/products/${id}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    },
+  },
+  orders: {
+    list: () => {
+      const token = Cookies.get("trd_seller_access");
+      return api.get("/sellers/orders/", {
         headers: { Authorization: `Bearer ${token}` },
       });
     },

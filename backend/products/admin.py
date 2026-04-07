@@ -24,6 +24,7 @@ class ProductAdmin(admin.ModelAdmin):
                                   "normal_delivery_charge", "express_delivery_charge")}),
         ("Stock", {"fields": ("stock_quantity", "sku")}),
         ("Deal Settings", {"fields": ("deal_discount_pct", "deal_end_date")}),
+        ("Sales & Ranking", {"fields": ("sold_recently", "category_rank", "category_rank_display")}),
         ("Ratings (auto)", {"fields": ("rating_avg", "rating_count")}),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )

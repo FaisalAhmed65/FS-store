@@ -15,8 +15,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { HeartIcon }      from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
-// TRD feature flags
-const ENABLE_RATINGS = process.env.NEXT_PUBLIC_ENABLE_RATINGS === "true";
+const ENABLE_RATINGS = true;
 
 export default function ProductDetailPage() {
   const router  = useRouter();

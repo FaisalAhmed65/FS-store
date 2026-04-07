@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { ordersApi, api } from "@/lib/api";
+import api, { ordersApi } from "@/lib/api";
 import { formatPrice, mediaUrl } from "@/lib/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 

@@ -12,7 +12,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ProductCard from "@/components/products/ProductCard";
 import { formatPrice } from "@/lib/utils";
 
-const SHOW_ORDERS = process.env.NEXT_PUBLIC_SELLER_SHOW_ORDERS === "true";
+const SHOW_ORDERS = true;
 
 const fetcher = () => sellerApi.dashboard().then((r) => r.data);
 

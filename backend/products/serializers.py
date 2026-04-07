@@ -26,7 +26,8 @@ class ProductListSerializer(serializers.ModelSerializer):
                   "is_free_delivery", "delivery_type",
                   "rating_avg", "rating_count", "stock_quantity",
                   "is_deal", "is_featured", "is_new_arrival", "is_bestseller",
-                  "deal_discount_pct", "deal_end_date")
+                  "deal_discount_pct", "deal_end_date",
+                  "sold_recently", "category_rank", "category_rank_display")
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -48,6 +49,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
                   "rating_avg", "rating_count",
                   "is_deal", "is_featured", "is_new_arrival", "is_bestseller",
                   "deal_discount_pct", "deal_end_date",
+                  "sold_recently", "category_rank", "category_rank_display",
                   "created_at", "updated_at")
 
 
