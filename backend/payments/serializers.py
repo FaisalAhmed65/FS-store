@@ -6,5 +6,6 @@ class PaymentTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model  = PaymentTransaction
         fields = ("id", "tran_id", "order", "amount", "currency",
-                  "status", "card_type", "created_at")
+                  "status", "gateway_transaction_id", "val_id", "bank_tran_id",
+                  "card_type", "callback_count", "paid_at", "created_at")
         read_only_fields = fields
