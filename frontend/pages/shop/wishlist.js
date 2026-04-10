@@ -7,26 +7,31 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { wishlistApi } from "@/lib/api";
 import { isCustomerLoggedIn } from "@/lib/auth";
+import { useWishlist } from "@/contexts/WishlistContext";
 import ProductCard from "@/components/products/ProductCard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function WishlistPage() {
   const [products, setProducts] = useState([]);
   const [loading,  setLoading]  = useState(true);
+  const { wishlistIds, synced } = useWishlist();
 
   useEffect(() => {
-    if (isCustomerLoggedIn()) {
+    if (isCustomerLoggedIn() && synced) {
       wishlistApi.list().then(({ data }) => {
         const lists = Array.isArray(data) ? data : [];
         // Flatten all items' product_detail objects
         const prods = lists.flatMap((l) => l.items.map((i) => i.product_detail).filter(Boolean));
-        setProducts(prods);
+        const activeIds = new Set(wishlistIds);
+        setProducts(prods.filter((product) => activeIds.has(Number(product.id))));
       }).finally(() => setLoading(false));
+    } else if (isCustomerLoggedIn()) {
+      setLoading(true);
     } else {
       // Guest: try localStorage IDs — we can't load product details without login
       setLoading(false);
     }
-  }, []);
+  }, [synced, wishlistIds]);
 
   return (
     <>
