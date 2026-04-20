@@ -150,6 +150,7 @@ SSLCZ_VALIDATION_URL = (
 # ─── Static / Media ────────────────────────────────────────────────────────────
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -198,26 +199,26 @@ SPECTACULAR_SETTINGS = {
 # ─── Jazzmin Admin UI ─────────────────────────────────────────────────────────
 JAZZMIN_SETTINGS = {
     # Window title & brand
-    "site_title": "TRD Store Admin",
-    "site_header": "TRD Store",
-    "site_brand": "TRD Store",
+    "site_title": "FS Store Admin",
+    "site_header": "FS Store",
+    "site_brand": "FS Store",
     "site_logo": None,  # set to "img/logo.png" if you add a logo in static
-    "welcome_sign": "Welcome to TRD Store Admin Panel",
-    "copyright": "TRD Store © 2026",
+    "welcome_sign": "Welcome to FS Store Admin",
+    "copyright": "FS Store © 2026",
 
     # Search bar — searches across these models
-    "search_model": ["customers.Customer", "products.ProductTemplate", "orders.Order"],
+    "search_model": ["customers.Customer", "products.Product", "orders.Order"],
 
     # Top navigation links
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"name": "Store", "url": "/", "new_window": True},
-        {"name": "API Docs", "url": "/api/schema/swagger-ui/", "new_window": True},
+        {"name": "API Docs", "url": "/api/docs/", "new_window": True},
     ],
 
     # User menu links (top right)
     "usermenu_links": [
-        {"name": "API Docs", "url": "/api/schema/swagger-ui/", "new_window": True, "icon": "fas fa-book"},
+        {"name": "API Docs", "url": "/api/docs/", "new_window": True, "icon": "fas fa-book"},
         {"model": "customers.customer"},
     ],
 
@@ -225,19 +226,19 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "auth":                    "fas fa-shield-alt",
         "customers.customer":      "fas fa-users",
-        "categories.category":     "fas fa-th-large",
-        "products.producttemplate":"fas fa-box-open",
-        "products.productvariant": "fas fa-cubes",
-        "products.brand":          "fas fa-trademark",
+        "categories.category":     "fas fa-layer-group",
+        "products.product":        "fas fa-cube",
+        "products.productimage":   "fas fa-images",
+        "products.productattribute": "fas fa-list",
         "sellers.seller":          "fas fa-store",
-        "orders.order":            "fas fa-shopping-cart",
+        "orders.order":            "fas fa-shopping-bag",
         "orders.orderline":        "fas fa-list",
         "reviews.review":          "fas fa-star",
         "wishlists.wishlist":      "fas fa-heart",
-        "offers.pricelist":        "fas fa-tags",
-        "payments.payment":        "fas fa-credit-card",
+        "offers.pricelist":        "fas fa-percentage",
+        "payments.payment":        "fas fa-wallet",
     },
-    "default_icon_parents": "fas fa-folder",
+    "default_icon_parents": "fas fa-chevron-right",
     "default_icon_children": "fas fa-circle",
 
     # Side menu ordering
@@ -254,10 +255,10 @@ JAZZMIN_SETTINGS = {
     "related_modal_active": True,
 
     # Theme: use a clean, modern look
-    "custom_css": None,
-    "custom_js": None,
+    "custom_css": "admin/css/custom_admin.css",
+    "custom_js": "admin/js/custom_admin.js",
     "use_google_fonts_cdn": True,
-    "show_ui_builder": False,
+    "show_ui_builder": False, # Disable default builder as we have our own toggle
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "auth.user": "collapsible",
@@ -271,25 +272,25 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-warning",   # yellow brand bar (matches TRD yellow)
-    "accent": "accent-warning",         # yellow accent
+    "brand_colour": "navbar-dark",   # yellow brand bar (matches TRD yellow)
+    "accent": "accent-primary",         # yellow accent
     "navbar": "navbar-dark",
     "no_navbar_border": True,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-warning",  # dark sidebar with yellow highlights
+    "sidebar": "sidebar-dark-primary",  # dark sidebar with yellow highlights
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "default",
-    "dark_mode_theme": "darkly",
+    "theme": "darkly",
+    "default_theme_mode": "dark",
     "button_classes": {
-        "primary": "btn-warning",
+        "primary": "btn-primary",
         "secondary": "btn-secondary",
         "info": "btn-info",
         "warning": "btn-warning",

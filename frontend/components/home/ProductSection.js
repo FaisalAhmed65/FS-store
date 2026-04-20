@@ -1,7 +1,6 @@
 ﻿/**
  * components/home/ProductSection.js
- * Reusable product section with title, "View All â†’" link, product grid, and nav buttons.
- * Matches Odoo Featured Products / Latest Drops / Free Delivery Products sections.
+ * Reusable storefront product section.
  */
 import { useRef, useState } from "react";
 import Link from "next/link";
@@ -18,8 +17,8 @@ export default function ProductSection({
   products = [],
   loading,
   viewAllHref = "/shop",
-  viewAllLabel = "View All â†’",
-  viewAllLabelBn = "à¦¸à¦¬ à¦¦à§‡à¦–à§à¦¨ â†’",
+  viewAllLabel = "View All",
+  viewAllLabelBn = "View All",
 }) {
   const [page, setPage] = useState(0);
   const containerRef = useRef(null);
@@ -36,7 +35,7 @@ export default function ProductSection({
   if (loading) {
     return (
       <section className="py-6 w-full">
-        <div className="px-4">
+        <div className="homepage-shell">
           <div className="flex items-center justify-between mb-4">
             <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
             <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
@@ -60,10 +59,10 @@ export default function ProductSection({
 
   return (
     <section className="py-6 w-full">
-      <div className="px-4">
+      <div className="homepage-shell">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-extrabold flex items-center gap-2" style={{ color: "#232f3e" }}>
+          <h2 className="text-xl font-extrabold flex items-center gap-2" style={{ color: "#17201b" }}>
             {icon && <i className={`fa ${icon}`} style={iconColor ? { color: iconColor } : undefined} />}
             {isBn && titleBn ? titleBn : title}
           </h2>
@@ -116,7 +115,7 @@ export default function ProductSection({
               <button
                 key={i}
                 onClick={() => setPage(i)}
-                className={`w-2 h-2 rounded-full border-none cursor-pointer transition-all ${
+                className={`w-2 h-2 rounded-sm border-none cursor-pointer transition-all ${
                   i === page ? "bg-blue-600 w-4" : "bg-gray-300"
                 }`}
                 aria-label={`Page ${i + 1}`}

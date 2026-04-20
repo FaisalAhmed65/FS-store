@@ -1,6 +1,6 @@
 /**
  * components/products/ProductSnippet.js
- * Titled horizontal section — matches bi_product_snippet Odoo layout.
+ * Titled horizontal product section.
  */
 import Link from "next/link";
 import ProductCard from "./ProductCard";
@@ -13,7 +13,7 @@ export default function ProductSnippet({ title, products, viewAllHref, loading }
         <h2 className="section-title">{title}</h2>
         {viewAllHref && (
           <Link href={viewAllHref} className="text-sm text-secondary hover:underline font-medium">
-            View All →
+            View All
           </Link>
         )}
       </div>

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import api, { ordersApi } from "@/lib/api";
-import { formatPrice, mediaUrl } from "@/lib/utils";
+import { formatPrice, mediaUrl, productHref } from "@/lib/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 export default function CartPage() {
@@ -95,7 +95,7 @@ export default function CartPage() {
                     <Image src={mediaUrl(product.image)} alt={product.name} fill className="object-contain p-1" unoptimized />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <Link href={`/shop/product/${product.slug}`} className="font-medium text-gray-800 hover:text-primary line-clamp-2 text-sm">
+                    <Link href={productHref(product)} className="font-medium text-gray-800 hover:text-primary line-clamp-2 text-sm">
                       {product.name}
                     </Link>
                     <p className="text-price-red font-bold mt-1">{formatPrice(product.price)}</p>

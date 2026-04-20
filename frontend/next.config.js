@@ -14,13 +14,23 @@ const nextConfig = {
         hostname: process.env.API_DOMAIN || "api.trdstore.sa",
         pathname: "/media/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        pathname: "/**",
+      },
     ],
   },
   async redirects() {
     return [
-      // TRD: /seller → /seller/register  (matches Odoo clean-disable commit)
+      // TRD: /seller -> /seller/register
       { source: "/seller", destination: "/seller/register", permanent: false },
-      // TRD: /wishlist → /shop/wishlist
+      // TRD: /wishlist -> /shop/wishlist
       { source: "/wishlist", destination: "/shop/wishlist", permanent: false },
     ];
   },

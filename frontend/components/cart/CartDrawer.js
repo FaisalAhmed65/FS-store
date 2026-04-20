@@ -70,7 +70,7 @@ export default function CartDrawer({ open, onClose }) {
                         <button
                           onClick={() => updateQty(product.id, quantity - 1)}
                           className="w-6 h-6 border rounded text-gray-600 hover:bg-gray-100 font-bold flex items-center justify-center"
-                        >−</button>
+                        >-</button>
                         <span className="text-sm w-5 text-center">{quantity}</span>
                         <button
                           onClick={() => updateQty(product.id, quantity + 1)}

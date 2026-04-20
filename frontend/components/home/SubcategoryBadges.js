@@ -1,6 +1,6 @@
 ﻿/**
  * components/home/SubcategoryBadges.js
- * Circular subcategory badges â€” matches Odoo snippet_subcategory_badges.
+ * Circular subcategory badges.
  * Auto-fetches first root category when no parentId is passed (homepage use).
  */
 import { useState, useEffect } from "react";
@@ -11,13 +11,14 @@ import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 export default function SubcategoryBadges({ parentId: propParentId }) {
   const { lang } = useLang();
   const isBn = lang === "bn";
 
   // Auto-detect first root category when parentId not provided (homepage)
-  const [autoParentId, setAutoParentId] = useState(null);
+  const [autoParentId, setAutoParentId] = useState(propParentId ? null : FALLBACK_CATEGORIES[0].id);
   useEffect(() => {
     if (!propParentId) {
       categoriesApi.list({ root_only: true })
@@ -25,7 +26,7 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
           const cats = r.data?.results ?? r.data ?? [];
           if (cats.length > 0) setAutoParentId(cats[0].id);
         })
-        .catch(() => {});
+        .catch(() => setAutoParentId(FALLBACK_CATEGORIES[0].id));
     }
   }, [propParentId]);
 
@@ -42,7 +43,8 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
     scrollRef.current.scrollBy({ left: dir * 250, behavior: "smooth" });
   }
 
-  const subcats = Array.isArray(data) ? data : [];
+  const fallbackParent = FALLBACK_CATEGORIES.find((cat) => cat.id === parentId || cat.slug === parentId) || FALLBACK_CATEGORIES[0];
+  const subcats = Array.isArray(data) && data.length ? data : fallbackParent.children || [];
 
   // Show loading state while auto-detecting category
   if (!parentId && !propParentId) {
@@ -62,13 +64,13 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
           {/* Prev */}
           <button
             onClick={() => scroll(-1)}
-            className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10 w-[30px] h-[30px] rounded-full bg-white/90 border border-gray-300 flex items-center justify-center cursor-pointer text-gray-600 shadow-sm hover:bg-white"
+            className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10 w-[30px] h-[30px] rounded-md bg-white/90 border border-gray-300 flex items-center justify-center cursor-pointer text-gray-600 shadow-sm hover:bg-white"
             aria-label="Previous"
           >
             <i className="fa fa-chevron-left text-sm" />
           </button>
 
-          {isLoading ? (
+          {isLoading && !subcats.length ? (
             <div className="text-center py-4">
               <i className="fa fa-spinner fa-spin fa-lg text-gray-400" />
             </div>
@@ -82,7 +84,7 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
                 {subcats.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/shop?category=${cat.slug || cat.id}`}
+                    href={`/shop?category_slug=${cat.slug || cat.id}`}
                     className="flex flex-col items-center no-underline min-w-[82px] max-w-[90px] hover:-translate-y-1 transition-transform"
                   >
                     <div className="w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-gray-200 bg-white flex items-center justify-center mb-1.5">
@@ -115,7 +117,7 @@ export default function SubcategoryBadges({ parentId: propParentId }) {
           {/* Next */}
           <button
             onClick={() => scroll(1)}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 w-[30px] h-[30px] rounded-full bg-white/90 border border-gray-300 flex items-center justify-center cursor-pointer text-gray-600 shadow-sm hover:bg-white"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 w-[30px] h-[30px] rounded-md bg-white/90 border border-gray-300 flex items-center justify-center cursor-pointer text-gray-600 shadow-sm hover:bg-white"
             aria-label="Next"
           >
             <i className="fa fa-chevron-right text-sm" />

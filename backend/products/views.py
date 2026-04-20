@@ -1,9 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
-from .serializers import ProductListSerializer, ProductDetailSerializer, ProductWriteSerializer
+from .serializers import ProductListSerializer, ProductDetailSerializer
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -16,7 +17,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ("price", "rating_avg", "created_at", "name")
 
     def get_queryset(self):
-        qs = Product.objects.filter(is_published=True, status=Product.STATUS_APPROVED)
+        qs = Product.objects.select_related("category", "seller").prefetch_related("images").filter(
+            is_published=True,
+            status=Product.STATUS_APPROVED,
+        )
         # Category filter
         cat_slug = self.request.query_params.get("category_slug")
         if cat_slug:
@@ -29,6 +33,17 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if max_price:
             qs = qs.filter(price__lte=max_price)
         return qs
+
+    def get_object(self):
+        lookup = self.kwargs.get(self.lookup_field)
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.filter(slug=lookup).first()
+        if obj is None and str(lookup).isdigit():
+            obj = get_object_or_404(queryset, pk=lookup)
+        elif obj is None:
+            obj = get_object_or_404(queryset, slug=lookup)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def get_serializer_class(self):
         if self.action == "retrieve":

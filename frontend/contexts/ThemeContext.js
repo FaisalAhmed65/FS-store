@@ -1,28 +1,45 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 const ThemeContext = createContext({ isDark: false, toggle: () => {} });
+const THEME_KEY = "trd-theme";
+
+function applyTheme(isDark) {
+  if (typeof document === "undefined") return;
+
+  document.body.classList.toggle("theme-dark", isDark);
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) {
+    themeColor.setAttribute("content", isDark ? "#0d1716" : "#f7fbfa");
+  }
+}
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("trd-theme");
-    if (saved === "dark") {
-      setIsDark(true);
-      document.body.classList.add("theme-dark");
+    try {
+      const saved = localStorage.getItem(THEME_KEY);
+      const next = saved === "dark";
+      setIsDark(next);
+      applyTheme(next);
+    } catch {
+      applyTheme(false);
     }
   }, []);
 
   function toggle() {
     setIsDark((prev) => {
       const next = !prev;
-      if (next) {
-        document.body.classList.add("theme-dark");
-        localStorage.setItem("trd-theme", "dark");
-      } else {
-        document.body.classList.remove("theme-dark");
-        localStorage.setItem("trd-theme", "light");
+      applyTheme(next);
+
+      try {
+        localStorage.setItem(THEME_KEY, next ? "dark" : "light");
+      } catch {
+        // Theme still updates for the current session if storage is blocked.
       }
+
       return next;
     });
   }

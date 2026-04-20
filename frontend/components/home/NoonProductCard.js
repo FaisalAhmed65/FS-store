@@ -1,11 +1,11 @@
 /**
  * components/home/NoonProductCard.js
- * Noon-style product card — matches Odoo noon_product_card template exactly.
+ * Storefront product card.
  */
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice, discountPct, mediaUrl } from "@/lib/utils";
+import { formatPrice, discountPct, mediaUrl, productHref } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -28,7 +28,7 @@ export default function NoonProductCard({ product }) {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   const {
-    id, slug, name, name_bn, image, price, compare_price,
+    id, name, name_bn, image, price, compare_price,
     is_featured, is_deal, is_new_arrival, is_bestseller,
     is_free_delivery, stock_quantity, delivery_type,
     get_in, get_in_bn, sold_recently, category_rank, brand,
@@ -36,8 +36,7 @@ export default function NoonProductCard({ product }) {
   } = product;
 
   const discount = discountPct(compare_price, price);
-  const href = `/shop/product/${slug || id}`;
-  const is_express = delivery_type === "express";
+  const href = productHref(product);
   const displayName = isBn && name_bn ? name_bn : name;
   const wishlisted = isWishlisted(id);
   const inCart = isInCart(id);
@@ -82,17 +81,15 @@ export default function NoonProductCard({ product }) {
 
       {/* Wishlist heart */}
       <button
-        className="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center z-10 shadow-sm hover:scale-110 transition-transform border-none cursor-pointer"
+        className="absolute top-2 right-2 bg-white rounded-md w-8 h-8 flex items-center justify-center z-10 shadow-sm hover:scale-110 transition-transform border-none cursor-pointer"
         aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
         onClick={handleWishlist}
       >
         <i className={`fa ${wishlisted ? "fa-heart text-red-500" : "fa-heart-o text-gray-500"} text-base`} />
       </button>
 
-      {/* Product link wraps image + info */}
-      <Link href={href} className="no-underline text-inherit flex flex-col flex-1">
-        {/* Image */}
-        <div className="noon-image-wrap">
+      <div className="noon-image-wrap">
+        <Link href={href} className="absolute inset-0 block" aria-label={displayName || "View product"}>
           <Image
             src={mediaUrl(image)}
             alt={name || "Product"}
@@ -101,18 +98,18 @@ export default function NoonProductCard({ product }) {
             sizes="(max-width: 768px) 50vw, 200px"
             unoptimized
           />
-          {/* Quick View — search icon */}
-          <button
-            className="noon-quick-add"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickViewOpen(true); }}
-            aria-label="Quick view product"
-            title="Quick View"
-          >
-            <i className="fa fa-search text-gray-600 text-base" />
-          </button>
-        </div>
+        </Link>
+        <button
+          className="noon-quick-add"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickViewOpen(true); }}
+          aria-label="Quick view product"
+          title="Quick View"
+        >
+          <i className="fa fa-search text-gray-600 text-base" />
+        </button>
+      </div>
 
-        {/* Info */}
+      <Link href={href} className="no-underline text-inherit flex flex-col flex-1">
         <div className="flex flex-col gap-1 flex-1">
           {/* Brand */}
           {brand && (
@@ -136,12 +133,11 @@ export default function NoonProductCard({ product }) {
           {/* Price */}
           <div className="mt-1">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs font-semibold text-gray-600 mt-0.5">৳</span>
-              <span className="text-[19px] font-extrabold tracking-tight leading-none" style={{ color: "#1a1a2e" }}>
-                {formatPrice(price).replace("৳", "")}
+              <span className="text-[19px] font-extrabold leading-none" style={{ color: "#1a1a2e" }}>
+                {formatPrice(price)}
               </span>
               {discount > 0 && (
-                <span className="text-xs text-gray-400 line-through ml-1">{formatPrice(compare_price).replace("৳", "")}</span>
+                <span className="text-xs text-gray-400 line-through ml-1">{formatPrice(compare_price)}</span>
               )}
               {discount > 0 && (
                 <span className="text-[12px] font-bold text-green-700">{discount}%</span>
@@ -159,7 +155,7 @@ export default function NoonProductCard({ product }) {
 
           {/* Stock indicator */}
           {stock_quantity != null && stock_quantity > 0 && stock_quantity <= 5 && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-1.5 py-px w-fit animate-pulse">
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-md px-1.5 py-px w-fit animate-pulse">
               <i className="fa fa-exclamation-circle text-[10px]" />
               {isBn ? `মাত্র ${stock_quantity}টি বাকি` : `Only ${stock_quantity} left`}
             </span>
@@ -185,7 +181,7 @@ export default function NoonProductCard({ product }) {
         </div>
       </Link>
 
-      {/* Add to cart / Qty controls — bottom of card, OUTSIDE Link */}
+      {/* Add to cart / qty controls */}
       <div className="mt-2">
         {inCart ? (
           <div className="noon-qty-ctrl">
@@ -196,7 +192,7 @@ export default function NoonProductCard({ product }) {
             >
               {cartItem?.quantity === 1
                 ? <i className="fa fa-trash text-red-500 text-xs" />
-                : <span className="text-lg leading-none">−</span>}
+                : <span className="text-lg leading-none">-</span>}
             </button>
             <span className="noon-qty-num">{cartItem?.quantity}</span>
             <button
@@ -227,7 +223,7 @@ export default function NoonProductCard({ product }) {
         )}
       </div>
 
-      {/* GET IN badge — bottom strip */}
+      {/* Delivery promise strip */}
       {get_in && (
         <div className="noon-get-in-badge">
           <i className="fa fa-bolt text-[11px] text-yellow-400" />

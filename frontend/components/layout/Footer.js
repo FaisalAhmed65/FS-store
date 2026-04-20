@@ -55,10 +55,10 @@ const footerColumns = [
     title: "Discover Now",
     titleBn: "\u098f\u0996\u09a8\u0987 \u0986\u09ac\u09bf\u09b7\u09cd\u0995\u09be\u09b0 \u0995\u09b0\u09c1\u09a8",
     links: [
-      { label: "Flash Deals",   labelBn: "\u09ab\u09cd\u09b2\u09cd\u09af\u09be\u09b6 \u09a1\u09bf\u09b2",          href: "/shop?filter=deals" },
-      { label: "New Arrivals",  labelBn: "\u09a8\u09a4\u09c1\u09a8 \u0986\u0997\u09ae\u09a8",            href: "/shop?filter=new-arrivals" },
-      { label: "Bestsellers",   labelBn: "\u09ac\u09c7\u09b8\u09cd\u099f\u09b8\u09c7\u09b2\u09be\u09b0",           href: "/shop?filter=bestsellers" },
-      { label: "Free Delivery", labelBn: "\u09ab\u09cd\u09b0\u09bf \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",        href: "/shop?filter=free-delivery" },
+      { label: "Flash Deals",   labelBn: "\u09ab\u09cd\u09b2\u09cd\u09af\u09be\u09b6 \u09a1\u09bf\u09b2",          href: "/shop?deal_type=deals" },
+      { label: "New Arrivals",  labelBn: "\u09a8\u09a4\u09c1\u09a8 \u0986\u0997\u09ae\u09a8",            href: "/shop?deal_type=new_arrivals" },
+      { label: "Bestsellers",   labelBn: "\u09ac\u09c7\u09b8\u09cd\u099f\u09b8\u09c7\u09b2\u09be\u09b0",           href: "/shop?deal_type=bestseller" },
+      { label: "Free Delivery", labelBn: "\u09ab\u09cd\u09b0\u09bf \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",        href: "/shop?free_delivery=1" },
       { label: "Sell on TRD",   labelBn: "\u099f\u09bf\u0986\u09b0\u09a1\u09bf\u09a4\u09c7 \u09ac\u09bf\u0995\u09cd\u09b0\u09bf \u0995\u09b0\u09c1\u09a8", href: "/seller/register" },
     ],
   },
@@ -76,10 +76,10 @@ const footerColumns = [
 ];
 
 const socialLinks = [
-  { icon: "fa-facebook-f", href: "#", label: "Facebook" },
+  { icon: "fa-facebook", href: "#", label: "Facebook" },
   { icon: "fa-twitter", href: "#", label: "Twitter" },
   { icon: "fa-instagram", href: "#", label: "Instagram" },
-  { icon: "fa-linkedin-in", href: "#", label: "LinkedIn" },
+  { icon: "fa-linkedin", href: "#", label: "LinkedIn" },
 ];
 
 const policyLinks = [

@@ -1,6 +1,6 @@
 ﻿/**
  * components/home/CategoryBadges.js
- * Horizontal scrollable category badges â€” matches Odoo category_badges_horizontal.
+ * Horizontal scrollable category badges.
  * Shows all parent categories with images in rounded-rect cards. Dynamic + Bengali.
  */
 import { useRef } from "react";
@@ -10,6 +10,7 @@ import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 export default function CategoryBadges() {
   const { data, isLoading } = useSWR("cat-badges", () =>
@@ -24,16 +25,16 @@ export default function CategoryBadges() {
     scrollRef.current.scrollBy({ left: dir * 400, behavior: "smooth" });
   }
 
-  const cats = Array.isArray(data) ? data : [];
+  const cats = Array.isArray(data) && data.length ? data : FALLBACK_CATEGORIES;
   // Use first 5 dynamic categories for quick links, fallback to none if loading
   const quickLinks = cats.slice(0, 5);
 
   return (
     <section className="py-6 w-full" style={{ background: "#fff" }}>
-      <div className="px-4">
-        <h2 className="text-xl font-extrabold mb-4" style={{ color: "#232f3e" }}>
+      <div className="homepage-shell">
+        <h2 className="text-xl font-extrabold mb-4" style={{ color: "#17201b" }}>
           <span className="t-en">Shop by Category</span>
-          <span className="t-bn">à¦•à§à¦¯à¦¾à¦Ÿà¦¾à¦—à¦°à¦¿ à¦…à¦¨à§à¦¯à¦¾à¦¯à¦¼à§€ à¦•à§‡à¦¨à¦¾à¦•à¦¾à¦Ÿà¦¾</span>
+          <span className="t-bn">Shop by Category</span>
         </h2>
 
         {/* Dynamic quick links from top categories */}
@@ -42,7 +43,7 @@ export default function CategoryBadges() {
             {quickLinks.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/shop?category=${cat.slug || cat.id}`}
+                href={`/shop?category_slug=${cat.slug || cat.id}`}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold no-underline whitespace-nowrap transition-all hover:-translate-y-0.5"
                 style={{ background: "#f8f9fa", color: "#374151", border: "1px solid #e5e7eb" }}
               >
@@ -57,14 +58,14 @@ export default function CategoryBadges() {
         <div className="relative">
           <button
             onClick={() => scroll(-1)}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-[15] w-12 h-12 rounded-full bg-white border border-gray-300 flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50 hover:border-gray-500 transition-all"
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-[15] w-12 h-12 rounded-md bg-white border border-gray-300 flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50 hover:border-gray-500 transition-all"
             style={{ opacity: 0.85 }}
             aria-label="Scroll left"
           >
             <i className="fa fa-chevron-left text-lg text-gray-700" />
           </button>
 
-          {isLoading ? (
+          {isLoading && !cats.length ? (
             <div className="text-center py-8">
               <i className="fa fa-spinner fa-spin fa-2x text-gray-400" />
             </div>
@@ -79,7 +80,7 @@ export default function CategoryBadges() {
                 {cats.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/shop?category=${cat.slug || cat.id}`}
+                    href={`/shop?category_slug=${cat.slug || cat.id}`}
                     className="cat-badge-item no-underline"
                   >
                     <div className="cat-badge-img-wrap">
@@ -98,7 +99,7 @@ export default function CategoryBadges() {
                         </div>
                       )}
                     </div>
-                    <span className="text-sm font-extrabold text-center leading-tight line-clamp-2" style={{ color: "#232f3e" }}>
+                    <span className="text-sm font-extrabold text-center leading-tight line-clamp-2" style={{ color: "#17201b" }}>
                       {isBn && cat.name_bn ? cat.name_bn : cat.name}
                     </span>
                   </Link>
@@ -109,7 +110,7 @@ export default function CategoryBadges() {
 
           <button
             onClick={() => scroll(1)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-[15] w-12 h-12 rounded-full bg-white border border-gray-300 flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50 hover:border-gray-500 transition-all"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-[15] w-12 h-12 rounded-md bg-white border border-gray-300 flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50 hover:border-gray-500 transition-all"
             style={{ opacity: 0.85 }}
             aria-label="Scroll right"
           >

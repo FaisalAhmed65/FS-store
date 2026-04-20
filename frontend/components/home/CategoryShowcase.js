@@ -10,6 +10,7 @@ import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 function CategoryBlock({ category }) {
   const { lang } = useLang();
@@ -32,12 +33,12 @@ function CategoryBlock({ category }) {
           {isBn && category.name_bn ? category.name_bn : category.name}
         </h3>
         <Link
-          href={`/shop?category=${category.slug || category.id}`}
+          href={`/shop?category_slug=${category.slug || category.id}`}
           className="text-sm font-semibold no-underline hover:underline"
           style={{ color: "#3b82f6" }}
         >
-          <span className="t-en">View All →</span>
-          <span className="t-bn">সব দেখুন →</span>
+          <span className="t-en">View All</span>
+          <span className="t-bn">View All</span>
         </Link>
       </div>
 
@@ -47,14 +48,14 @@ function CategoryBlock({ category }) {
           <>
             <button
               onClick={() => scroll(-1)}
-              className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-gray-50 transition-all"
+              className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-md bg-white shadow-md border flex items-center justify-center hover:bg-gray-50 transition-all"
               aria-label="Scroll left"
             >
               <i className="fa fa-chevron-left text-gray-600" />
             </button>
             <button
               onClick={() => scroll(1)}
-              className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-gray-50 transition-all"
+              className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-md bg-white shadow-md border flex items-center justify-center hover:bg-gray-50 transition-all"
               aria-label="Scroll right"
             >
               <i className="fa fa-chevron-right text-gray-600" />
@@ -73,10 +74,10 @@ function CategoryBlock({ category }) {
               children.map((sub) => (
                 <Link
                   key={sub.id}
-                  href={`/shop?category=${sub.slug || sub.id}`}
+                  href={`/shop?category_slug=${sub.slug || sub.id}`}
                   className="flex-shrink-0 w-36 no-underline text-center group"
                 >
-                  <div className="w-36 h-36 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 transition-all group-hover:border-blue-300 group-hover:shadow-md">
+                  <div className="w-36 h-36 rounded-lg overflow-hidden bg-gray-50 border border-gray-200 transition-all group-hover:border-blue-300 group-hover:shadow-md">
                     {sub.image ? (
                       <Image
                         src={mediaUrl(sub.image)}
@@ -104,7 +105,7 @@ function CategoryBlock({ category }) {
               /* placeholders when no subcategories */
               [1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="flex-shrink-0 w-36 text-center">
-                  <div className="w-36 h-36 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center">
+                  <div className="w-36 h-36 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
                     <i className="fa fa-image text-3xl text-gray-300" />
                   </div>
                   <span className="block mt-2 h-3 w-20 mx-auto rounded bg-gray-200" />
@@ -123,9 +124,9 @@ export default function CategoryShowcase() {
     categoriesApi.showcase().then((r) => r.data?.results ?? r.data ?? [])
   );
 
-  const categories = Array.isArray(data) ? data : [];
+  const categories = Array.isArray(data) && data.length ? data : FALLBACK_CATEGORIES;
 
-  if (isLoading) {
+  if (isLoading && categories.length === 0) {
     return (
       <section className="py-6 px-4 text-center">
         <i className="fa fa-spinner fa-spin fa-2x text-gray-400" />
@@ -137,7 +138,7 @@ export default function CategoryShowcase() {
 
   return (
     <section className="py-6 w-full" style={{ background: "#fff" }}>
-      <div className="px-4">
+      <div className="homepage-shell">
         <h2 className="text-2xl font-extrabold mb-6" style={{ color: "#1a1a2e" }}>
           <i className="fa fa-th-large mr-2 text-blue-500" />
           <span className="t-en">Shop by Category</span>

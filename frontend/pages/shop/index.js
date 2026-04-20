@@ -1,10 +1,5 @@
 /**
- * pages/shop/index.js — Noon-style Shop Page
- * Matches the Odoo TRD Store custom shop layout:
- *   • Left sidebar: category tree, price range, express/free delivery, deals filters
- *   • Top filter bar: Deals dropdown, Rating dropdown, Sort By dropdown
- *   • Promo strip: Featured / EID / Mega Deals / Best Sellers banners
- *   • Product grid: noon-style cards
+ * pages/shop/index.js - Shop Page
  */
 import Head from "next/head";
 import Link from "next/link";
@@ -16,6 +11,7 @@ import { productsApi, categoriesApi } from "@/lib/api";
 import NoonProductCard from "@/components/home/NoonProductCard";
 import Pagination from "@/components/ui/Pagination";
 import { mediaUrl } from "@/lib/utils";
+import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallbackData";
 
 /* ─── helpers ─── */
 function useClickOutside(ref, handler) {
@@ -33,30 +29,43 @@ function useClickOutside(ref, handler) {
 export default function ShopPage() {
   const router = useRouter();
   const {
-    category_slug, search, page = 1,
+    category_slug, category, search, q: searchAlias, page = 1,
     min_price, max_price,
-    deal_type, rating, ordering, express, free_delivery,
+    deal_type, filter, rating, ordering, express, free_delivery,
   } = router.query;
+  const filterDealMap = {
+    featured: "featured",
+    deals: "deals",
+    bestsellers: "bestseller",
+    "new-arrivals": "new_arrivals",
+  };
+  const queryValue = (value) => Array.isArray(value) ? value[0] : value;
+  const legacyFilter = queryValue(filter);
+  const activeCategorySlug = queryValue(category_slug) || queryValue(category);
+  const activeSearch = queryValue(search) || queryValue(searchAlias);
+  const activeDealType = queryValue(deal_type) || filterDealMap[legacyFilter] || "";
+  const freeDeliveryActive = queryValue(free_delivery) === "1" || legacyFilter === "free-delivery";
 
   /* --- Data fetching --- */
   const params = {
-    ...(category_slug  && { category_slug }),
-    ...(search         && { search }),
+    ...(activeCategorySlug  && { category_slug: activeCategorySlug }),
+    ...(activeSearch        && { search: activeSearch }),
     ...(min_price      && { min_price }),
     ...(max_price      && { max_price }),
-    ...(deal_type === "featured"    && { is_featured: true }),
-    ...(deal_type === "deals"       && { is_deal: true }),
-    ...(deal_type === "bestseller"  && { is_bestseller: true }),
-    ...(deal_type === "new_arrivals" && { is_new_arrival: true }),
-    ...(deal_type === "eid"         && { is_deal: true }),
+    ...(activeDealType === "featured"    && { is_featured: true }),
+    ...(activeDealType === "deals"       && { is_deal: true }),
+    ...(activeDealType === "bestseller"  && { is_bestseller: true }),
+    ...(activeDealType === "new_arrivals" && { is_new_arrival: true }),
+    ...(activeDealType === "eid"         && { is_deal: true }),
     ...(express === "1"             && { delivery_type: "express" }),
-    ...(free_delivery === "1"       && { is_free_delivery: true }),
+    ...(freeDeliveryActive          && { is_free_delivery: true }),
     ...(ordering       && { ordering }),
     page,
   };
   const fetchKey = JSON.stringify(params);
   const { data, isLoading } = useSWR(fetchKey, () => productsApi.list(params).then(r => r.data));
-  const products = data?.results ?? (Array.isArray(data) ? data : []);
+  const rawProducts = data?.results ?? (Array.isArray(data) ? data : []);
+  const products = rawProducts.length ? rawProducts : (!data ? FALLBACK_PRODUCTS : rawProducts);
   const totalCount = data?.count ?? products.length;
   const totalPages = data?.count ? Math.ceil(data.count / 24) : 1;
 
@@ -67,16 +76,23 @@ export default function ShopPage() {
       return Array.isArray(d) ? d : [];
     })
   );
+  const sidebarCategories = Array.isArray(categoryTree) && categoryTree.length ? categoryTree : FALLBACK_CATEGORIES;
 
   /* --- URL param helpers --- */
   function setParam(key, val) {
     const q = { ...router.query, [key]: val, page: 1 };
+    if (key === "category_slug") delete q.category;
+    if (key === "search") delete q.q;
+    if (key === "deal_type" || key === "free_delivery") delete q.filter;
     if (!val) delete q[key];
     router.push({ pathname: "/shop", query: q }, undefined, { shallow: false });
   }
   function clearParam(key) {
     const q = { ...router.query };
     delete q[key];
+    if (key === "category_slug") delete q.category;
+    if (key === "search") delete q.q;
+    if (key === "deal_type" || key === "free_delivery") delete q.filter;
     q.page = 1;
     router.push({ pathname: "/shop", query: q }, undefined, { shallow: false });
   }
@@ -85,17 +101,17 @@ export default function ShopPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* --- Build page title --- */
-  const pageTitle = deal_type
-    ? { featured: "Featured", deals: "Mega Deals", bestseller: "Best Sellers", new_arrivals: "New Arrivals", eid: "EID Offers" }[deal_type] || "Shop"
-    : category_slug
-    ? category_slug.replace(/-/g, " ")
-    : search
-    ? `"${search}"`
+  const pageTitle = activeDealType
+    ? { featured: "Featured", deals: "Mega Deals", bestseller: "Best Sellers", new_arrivals: "New Arrivals", eid: "EID Offers" }[activeDealType] || "Shop"
+    : activeCategorySlug
+    ? activeCategorySlug.replace(/-/g, " ")
+    : activeSearch
+    ? `"${activeSearch}"`
     : "All Products";
 
   return (
     <>
-      <Head><title>{pageTitle} – TRD Store</title></Head>
+      <Head><title>{pageTitle} - TRD Store</title></Head>
 
       <div className="noon-shop-wrapper">
         {/* Mobile filter toggle */}
@@ -113,11 +129,16 @@ export default function ShopPage() {
           <Sidebar
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
-            categoryTree={categoryTree || []}
-            activeSlug={category_slug}
+            categoryTree={sidebarCategories}
+            activeSlug={activeCategorySlug}
             onCategoryClick={(slug) => {
               if (slug) setParam("category_slug", slug);
-              else clearParam("category_slug");
+              else {
+                const q = { ...router.query, page: 1 };
+                delete q.category_slug;
+                delete q.category;
+                router.push({ pathname: "/shop", query: q }, undefined, { shallow: false });
+              }
               setSidebarOpen(false);
             }}
             minPrice={min_price}
@@ -130,9 +151,9 @@ export default function ShopPage() {
             }}
             express={express}
             onExpressToggle={() => express === "1" ? clearParam("express") : setParam("express", "1")}
-            freeDelivery={free_delivery}
-            onFreeDeliveryToggle={() => free_delivery === "1" ? clearParam("free_delivery") : setParam("free_delivery", "1")}
-            dealType={deal_type}
+            freeDelivery={freeDeliveryActive ? "1" : ""}
+            onFreeDeliveryToggle={() => freeDeliveryActive ? clearParam("free_delivery") : setParam("free_delivery", "1")}
+            dealType={activeDealType}
             onDealChange={(val) => val ? setParam("deal_type", val) : clearParam("deal_type")}
             ratingVal={rating}
             onRatingChange={(val) => val ? setParam("rating", val) : clearParam("rating")}
@@ -147,7 +168,7 @@ export default function ShopPage() {
           <main className="noon-shop-main">
             {/* Top filter bar */}
             <TopFilterBar
-              dealType={deal_type}
+              dealType={activeDealType}
               onDealChange={(val) => val ? setParam("deal_type", val) : clearParam("deal_type")}
               ratingVal={rating}
               onRatingChange={(val) => val ? setParam("rating", val) : clearParam("rating")}
@@ -164,7 +185,7 @@ export default function ShopPage() {
             </div>
 
             {/* Grid */}
-            {isLoading ? (
+            {isLoading && !products.length ? (
               <div className="noon-shop-grid">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div key={i} className="noon-card animate-pulse">
@@ -229,7 +250,7 @@ function Sidebar({
         {/* Close (mobile) */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 lg:hidden">
           <span className="font-bold text-base">Filters</span>
-          <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+          <button onClick={onClose} className="w-8 h-8 rounded-md hover:bg-gray-100 flex items-center justify-center">
             <i className="fa fa-times" />
           </button>
         </div>
@@ -258,9 +279,9 @@ function Sidebar({
         <FilterSection title="Price Range" sectionKey="price" collapsed={collapsed} toggle={toggle}>
           <div className="trd-price-slider">
             <div className="flex justify-between items-center text-xs font-semibold text-gray-500 mb-2.5">
-              <span>৳{priceMin}</span>
+              <span>BDT {priceMin}</span>
               <span className="text-[10px] text-gray-400">BDT</span>
-              <span>৳{priceMax}</span>
+              <span>BDT {priceMax}</span>
             </div>
             <div className="trd-range-track">
               <div
@@ -298,7 +319,7 @@ function Sidebar({
         <FilterSection title="Free Delivery" icon="fa-truck" sectionKey="fd" collapsed={collapsed} toggle={toggle}>
           <label className="noon-filter-check">
             <input type="checkbox" checked={freeDelivery === "1"} onChange={onFreeDeliveryToggle} className="noon-checkbox" />
-            <span className="text-green-700 font-semibold text-xs">🚚 Free Delivery</span>
+            <span className="text-green-700 font-semibold text-xs"><i className="fa fa-truck mr-1" />Free Delivery</span>
             <span className="text-gray-400 text-xs ml-auto">Free shipping</span>
           </label>
         </FilterSection>
@@ -348,7 +369,7 @@ function Sidebar({
 }
 
 /* ── Category Node (recursive) ── */
-function CategoryNode({ cat, activeSlug, onClick, depth = 0 }) {
+function CategoryNode({ cat, activeSlug, onClick }) {
   const [open, setOpen] = useState(false);
   const hasChildren = cat.children?.length > 0;
   const isActive = activeSlug === cat.slug;
@@ -391,7 +412,7 @@ function CategoryNode({ cat, activeSlug, onClick, depth = 0 }) {
       {hasChildren && open && (
         <div className="noon-cat-children">
           {cat.children.map(sub => (
-            <CategoryNode key={sub.id} cat={sub} activeSlug={activeSlug} onClick={onClick} depth={depth + 1} />
+            <CategoryNode key={sub.id} cat={sub} activeSlug={activeSlug} onClick={onClick} />
           ))}
         </div>
       )}
@@ -440,10 +461,10 @@ function TopFilterBar({ dealType, onDealChange, ratingVal, onRatingChange, sortV
           value={ratingVal}
           options={[
             { val: "", label: "All Ratings" },
-            { val: "4", label: "★★★★ & Up" },
-            { val: "3", label: "★★★ & Up" },
-            { val: "2", label: "★★ & Up" },
-            { val: "1", label: "★ & Up" },
+            { val: "4", label: "4 stars & Up" },
+            { val: "3", label: "3 stars & Up" },
+            { val: "2", label: "2 stars & Up" },
+            { val: "1", label: "1 star & Up" },
           ]}
           onChange={onRatingChange}
         />
@@ -454,7 +475,7 @@ function TopFilterBar({ dealType, onDealChange, ratingVal, onRatingChange, sortV
             align="right"
             options={[
               { val: "", label: "Featured" },
-              { val: "name", label: "Name (A → Z)" },
+              { val: "name", label: "Name (A to Z)" },
               { val: "price", label: "Price: Low to High" },
               { val: "-price", label: "Price: High to Low" },
               { val: "-created_at", label: "Newest Arrivals" },
@@ -503,7 +524,7 @@ function FilterDropdown({ label, value, options, onChange, align }) {
 }
 
 /* ================================================================
-   PROMO STRIP — 4 colored cards matching Odoo
+   PROMO STRIP
    ================================================================ */
 const PROMOS = [
   {
@@ -516,7 +537,7 @@ const PROMOS = [
   },
   {
     href: "/shop?deal_type=eid",
-    gradient: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+    gradient: "linear-gradient(135deg, #007185 0%, #00a8a8 100%)",
     color: "#fff",
     icon: "fa-moon-o",
     title: "EID Offers",
@@ -556,7 +577,7 @@ function PromoStrip() {
           <div className="trd-promo-text">
             <span className="trd-promo-title">{p.title}</span>
             <span className="trd-promo-sub">{p.sub}</span>
-            <span className="trd-promo-cta">Shop Now →</span>
+            <span className="trd-promo-cta">Shop Now</span>
           </div>
         </Link>
       ))}

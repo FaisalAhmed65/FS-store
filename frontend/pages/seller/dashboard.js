@@ -89,7 +89,7 @@ export default function SellerDashboardPage() {
             <h3 className="font-bold text-primary section-title mb-4">Recent Products</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {recent_products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} hrefOverride={`/seller/product/${p.id}/edit`} />
               ))}
             </div>
           </div>

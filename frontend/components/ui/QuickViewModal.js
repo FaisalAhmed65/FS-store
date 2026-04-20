@@ -2,13 +2,13 @@
  * components/ui/QuickViewModal.js
  * Odoo-style quick view modal for product cards.
  * Shows image, name, price, discount, short description, stock and CTA buttons.
- * Rendered via React Portal to document.body — prevents layout-blink from card transforms.
+ * Rendered via React Portal to document.body.
  */
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice, discountPct, mediaUrl } from "@/lib/utils";
+import { formatPrice, discountPct, mediaUrl, productHref } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 
@@ -35,7 +35,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
   if (!product || !mounted) return null;
 
   const {
-    slug, name, name_bn, image, price, compare_price,
+    name, name_bn, image, price, compare_price,
     description, description_bn,
     is_free_delivery, delivery_type, stock_quantity,
     is_deal, is_featured, is_new_arrival, is_bestseller,
@@ -46,7 +46,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
   const displayDesc = isBn && description_bn ? description_bn : description;
   const discount = discountPct(compare_price, price);
   const is_express = delivery_type === "express";
-  const href = `/shop/product/${slug || product.id}`;
+  const href = productHref(product);
 
   // Star rating helper
   const stars = Math.round(Number(rating_avg) || 0);
@@ -76,7 +76,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
         </button>
 
         <div className="qv-body">
-          {/* Left — Image */}
+          {/* Left image */}
           <div className="qv-image-col">
             <div className="qv-image-wrap">
               <Image
@@ -93,7 +93,7 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
             </div>
           </div>
 
-          {/* Right — Info */}
+          {/* Right info */}
           <div className="qv-info-col">
             {/* Badges row */}
             <div className="flex gap-1.5 flex-wrap mb-2">
@@ -127,10 +127,10 @@ export default function QuickViewModal({ product, onClose, onAddToCart }) {
 
             {/* Price */}
             <div className="qv-price-row">
-              <span className="qv-price">৳{formatPrice(price).replace("৳", "")}</span>
+              <span className="qv-price">{formatPrice(price)}</span>
               {discount > 0 && (
                 <>
-                  <span className="qv-compare">৳{formatPrice(compare_price).replace("৳", "")}</span>
+                  <span className="qv-compare">{formatPrice(compare_price)}</span>
                   <span className="qv-save">{discount}% OFF</span>
                 </>
               )}
