@@ -89,7 +89,7 @@ export default function AddProductPage() {
               <Field label="SKU">
                 <input value={form.sku} onChange={(e) => update("sku", e.target.value)} className="input-field" />
               </Field>
-              <Field label="What's in the Box">
+              <Field label="GET IN">
                 <input value={form.get_in} onChange={(e) => update("get_in", e.target.value)} className="input-field" />
               </Field>
             </Section>
