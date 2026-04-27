@@ -23,8 +23,14 @@ export function discountPct(original, sale) {
 export function mediaUrl(path) {
   if (!path) return "/images/placeholder.svg";
   if (path.startsWith("http")) return path;
-  const base = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1")
-    .replace("/api/v1", "");
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1")
+    .replace(/\/+$/, "");
+  const normalizedApiBase = /\/api\/v\d+$/i.test(apiBase)
+    ? apiBase
+    : /\/api$/i.test(apiBase)
+    ? `${apiBase}/v1`
+    : `${apiBase}/api/v1`;
+  const base = normalizedApiBase.replace(/\/api\/v\d+$/i, "");
   return `${base}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 

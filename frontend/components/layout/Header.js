@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLang } from "@/contexts/LanguageContext";
+import { EN_STRINGS, BN_STRINGS } from "@/lib/translations";
 import CartDrawer from "@/components/cart/CartDrawer";
 
 function SearchIcon({ size = 20 }) {
@@ -35,24 +37,27 @@ function ThemeToggleIcon({ isDark }) {
 }
 
 const navItems = [
-  { href: "/shop", label: "All" },
-  { href: "/shop?deal_type=deals", label: "Deal Lab" },
-  { href: "/shop?deal_type=new_arrivals", label: "New Drops" },
-  { href: "/shop?deal_type=bestseller", label: "Most Loved" },
-  { href: "/shop?free_delivery=1", label: "Fast Delivery" },
-  { href: "/seller/register", label: "Seller Hub" },
+  { href: "/shop", label: "All", labelBn: "\u09b8\u09ac" },
+  { href: "/shop?deal_type=deals", label: "Deal Lab", labelBn: "\u09a1\u09bf\u09b2 \u09b2\u09cd\u09af\u09be\u09ac" },
+  { href: "/shop?deal_type=new_arrivals", label: "New Drops", labelBn: "\u09a8\u09a4\u09c1\u09a8 \u09aa\u09a3\u09cd\u09af" },
+  { href: "/shop?deal_type=bestseller", label: "Most Loved", labelBn: "\u099c\u09a8\u09aa\u09cd\u09b0\u09bf\u09af\u09bc" },
+  { href: "/shop?free_delivery=1", label: "Fast Delivery", labelBn: "\u09a6\u09cd\u09b0\u09c1\u09a4 \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf" },
+  { href: "/seller/register", label: "Seller Hub", labelBn: "\u09b8\u09c7\u09b2\u09be\u09b0 \u09b9\u09be\u09ac" },
 ];
 
 export default function Header() {
   const { totalItems } = useCart();
   const { user, logout } = useAuth();
   const { isDark, toggle: toggleTheme } = useTheme();
+  const { lang, toggleLang } = useLang();
   const [cartOpen, setCartOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const router = useRouter();
+  const isBn = lang === "bn";
+  const tr = isBn ? BN_STRINGS : EN_STRINGS;
 
   const displayName = user?.first_name || user?.username || "Account";
 
@@ -86,8 +91,8 @@ export default function Header() {
           </Link>
 
           <Link href="/shop?free_delivery=1" className="amazon-delivery">
-            <span className="amazon-delivery-kicker">Delivering across</span>
-            <span className="amazon-delivery-main">Bangladesh</span>
+            <span className="amazon-delivery-kicker">{isBn ? "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf" : "Delivering across"}</span>
+            <span className="amazon-delivery-main">{tr.BANGLADESH}</span>
           </Link>
 
           <form onSubmit={handleSearch} className="amazon-search" role="search">
@@ -97,17 +102,17 @@ export default function Header() {
               onChange={(e) => setCategory(e.target.value)}
               className="amazon-search-select"
             >
-              <option value="">All</option>
-              <option value="electronics">Electronics</option>
-              <option value="fashion">Fashion</option>
-              <option value="home-living">Home</option>
-              <option value="beauty">Beauty</option>
+              <option value="">{isBn ? "\u09b8\u09ac" : "All"}</option>
+              <option value="electronics">{isBn ? "\u0987\u09b2\u09c7\u0995\u099f\u09cd\u09b0\u09a8\u09bf\u0995\u09cd\u09b8" : "Electronics"}</option>
+              <option value="fashion">{isBn ? "\u09ab\u09cd\u09af\u09be\u09b6\u09a8" : "Fashion"}</option>
+              <option value="home-living">{isBn ? "\u09b9\u09cb\u09ae" : "Home"}</option>
+              <option value="beauty">{isBn ? "\u09ac\u09bf\u0989\u099f\u09bf" : "Beauty"}</option>
             </select>
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search laptops, sneakers, skincare..."
+              placeholder={tr.SEARCH_PLACEHOLDER}
               className="amazon-search-input"
             />
             <button type="submit" className="amazon-search-btn" aria-label="Search">
@@ -134,6 +139,18 @@ export default function Header() {
               </span>
             </button>
 
+            <button
+              type="button"
+              onClick={toggleLang}
+              className="language-toggle-btn"
+              aria-label={isBn ? "Switch to English" : "Switch to Bengali"}
+            >
+              <span className="language-toggle-current">{isBn ? "BN" : "EN"}</span>
+              <span className="language-toggle-label">
+                {isBn ? "English" : "\u09ac\u09be\u0982\u09b2\u09be"}
+              </span>
+            </button>
+
             <div className="relative" ref={profileRef}>
               {user ? (
                 <>
@@ -143,7 +160,7 @@ export default function Header() {
                     className="amazon-action-btn"
                     aria-expanded={profileOpen}
                   >
-                    <span className="amazon-action-kicker">Hello</span>
+                    <span className="amazon-action-kicker">{isBn ? "\u09b9\u09cd\u09af\u09be\u09b2\u09cb" : "Hello"}</span>
                     <span className="amazon-action-main max-w-[96px] truncate">{displayName}</span>
                   </button>
                   {profileOpen && (
@@ -153,10 +170,10 @@ export default function Header() {
                         {user.email && <div className="text-xs text-gray-500 truncate">{user.email}</div>}
                       </div>
                       <Link href="/shop/wishlist" className="amazon-profile-link" onClick={() => setProfileOpen(false)}>
-                        Wishlist
+                        {isBn ? "\u0989\u0987\u09b6\u09b2\u09bf\u09b8\u09cd\u099f" : "Wishlist"}
                       </Link>
                       <Link href="/seller/dashboard" className="amazon-profile-link" onClick={() => setProfileOpen(false)}>
-                        Seller Dashboard
+                        {isBn ? "\u09b8\u09c7\u09b2\u09be\u09b0 \u09a1\u09cd\u09af\u09be\u09b6\u09ac\u09cb\u09b0\u09cd\u09a1" : "Seller Dashboard"}
                       </Link>
                       <button
                         type="button"
@@ -164,15 +181,15 @@ export default function Header() {
                         className="amazon-profile-link w-full text-left text-red-600"
                         style={{ color: "#dc2626" }}
                       >
-                        Log Out
+                        {tr.LOGOUT}
                       </button>
                     </div>
                   )}
                 </>
               ) : (
                 <Link href="/login" className="amazon-action-btn">
-                  <span className="amazon-action-kicker">Hello</span>
-                  <span className="amazon-action-main">Sign in</span>
+                  <span className="amazon-action-kicker">{isBn ? "\u09b9\u09cd\u09af\u09be\u09b2\u09cb" : "Hello"}</span>
+                  <span className="amazon-action-main">{isBn ? tr.LOGIN : "Sign in"}</span>
                 </Link>
               )}
             </div>
@@ -183,7 +200,7 @@ export default function Header() {
 
             <button type="button" onClick={() => setCartOpen(true)} className="amazon-cart-btn" aria-label="Cart">
               <CartIcon />
-              <span className="amazon-cart-label">Cart</span>
+              <span className="amazon-cart-label">{isBn ? "\u0995\u09be\u09b0\u09cd\u099f" : "Cart"}</span>
               {totalItems > 0 && <span className="amazon-cart-count">{totalItems}</span>}
             </button>
           </div>
@@ -192,17 +209,17 @@ export default function Header() {
         <nav className="amazon-subnav" aria-label="Store navigation">
           <button type="button" className="amazon-subnav-all" onClick={() => router.push("/shop")}>
             <i className="fa fa-bars" aria-hidden="true" />
-            All
+            {isBn ? navItems[0].labelBn : navItems[0].label}
           </button>
           <div className="amazon-subnav-track">
             {navItems.slice(1).map((item) => (
               <Link key={item.href} href={item.href} className="amazon-subnav-link">
-                {item.label}
+                {isBn ? item.labelBn : item.label}
               </Link>
             ))}
           </div>
           <Link href="/#quick-match" className="amazon-subnav-deal">
-            Build my shelf
+            {isBn ? "\u09aa\u099b\u09a8\u09cd\u09a6 \u0996\u09c1\u0981\u099c\u09c1\u09a8" : "Build my shelf"}
           </Link>
         </nav>
       </header>

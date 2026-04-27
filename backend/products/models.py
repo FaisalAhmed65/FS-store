@@ -29,8 +29,9 @@ class Product(models.Model):
     slug           = models.SlugField(unique=True, max_length=320)
     description    = models.TextField(blank=True)
     description_bn = models.TextField(blank=True, help_text="Bengali description (বাংলা বিবরণ)")
-    get_in         = models.CharField(max_length=300, blank=True, help_text="What's in the box")
-    get_in_bn      = models.CharField(max_length=300, blank=True, help_text="Bengali: বাক্সে কী আছে")
+    get_in         = models.CharField("GET IN", max_length=300, blank=True, help_text="Delivery promise text")
+    brand          = models.CharField(max_length=120, blank=True, db_index=True)
+    get_in_bn      = models.CharField("GET IN BN", max_length=300, blank=True, help_text="Bengali delivery promise text")
 
     # Pricing
     price         = models.DecimalField(max_digits=10, decimal_places=2)

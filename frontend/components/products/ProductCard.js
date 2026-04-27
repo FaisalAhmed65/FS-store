@@ -9,11 +9,14 @@ import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import { useCart }     from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useLang } from "@/contexts/LanguageContext";
 import { formatPrice, mediaUrl, discountPct, productHref } from "@/lib/utils";
 
 export default function ProductCard({ product, hrefOverride }) {
   const { addItem, isInCart }   = useCart();
   const { toggle, isWishlisted } = useWishlist();
+  const { lang } = useLang();
+  const isBn = lang === "bn";
   const [added, setAdded]        = useState(false);
 
   if (!product) return null;
@@ -30,9 +33,14 @@ export default function ProductCard({ product, hrefOverride }) {
     setTimeout(() => setAdded(false), 1500);
   }
 
-  function handleWishlist(e) {
+  async function handleWishlist(e) {
     e.preventDefault();
-    toggle(product);
+    e.stopPropagation();
+    try {
+      await toggle(product);
+    } catch {
+      // WishlistContext rolls back failed optimistic updates.
+    }
   }
 
   return (
@@ -44,9 +52,15 @@ export default function ProductCard({ product, hrefOverride }) {
 
       {/* Wishlist button */}
       <button
+        type="button"
         onClick={handleWishlist}
         className="absolute top-2 right-2 z-10 p-1 bg-white rounded-full shadow"
-        aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        aria-label={
+          wishlisted
+            ? (isBn ? "উইশলিস্ট থেকে সরান" : "Remove from wishlist")
+            : (isBn ? "উইশলিস্টে যোগ করুন" : "Add to wishlist")
+        }
+        aria-pressed={wishlisted}
       >
         {wishlisted ? (
           <HeartSolid className="w-5 h-5 text-red-500" />
@@ -89,7 +103,7 @@ export default function ProductCard({ product, hrefOverride }) {
 
           {/* Delivery */}
           {product.is_free_delivery && (
-            <span className="text-xs text-green-600 font-medium mt-1">Free Delivery</span>
+            <span className="text-xs text-green-600 font-medium mt-1">{isBn ? "ফ্রি ডেলিভারি" : "Free Delivery"}</span>
           )}
         </div>
       </Link>
@@ -106,7 +120,11 @@ export default function ProductCard({ product, hrefOverride }) {
               : "btn-accent"
           }`}
         >
-          {added ? "Added!" : isInCart(product.id) ? "In Cart" : "Add to Cart"}
+          {added
+            ? (isBn ? "যোগ হয়েছে!" : "Added!")
+            : isInCart(product.id)
+            ? (isBn ? "কার্টে আছে" : "In Cart")
+            : (isBn ? "কার্টে যোগ করুন" : "Add to Cart")}
         </button>
       </div>
     </div>

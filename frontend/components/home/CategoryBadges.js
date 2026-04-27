@@ -10,7 +10,6 @@ import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { mediaUrl } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
-import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 export default function CategoryBadges() {
   const { data, isLoading } = useSWR("cat-badges", () =>
@@ -25,9 +24,11 @@ export default function CategoryBadges() {
     scrollRef.current.scrollBy({ left: dir * 400, behavior: "smooth" });
   }
 
-  const cats = Array.isArray(data) && data.length ? data : FALLBACK_CATEGORIES;
+  const cats = Array.isArray(data) ? data : [];
   // Use first 5 dynamic categories for quick links, fallback to none if loading
   const quickLinks = cats.slice(0, 5);
+
+  if (!isLoading && cats.length === 0) return null;
 
   return (
     <section className="py-6 w-full" style={{ background: "#fff" }}>
@@ -77,16 +78,18 @@ export default function CategoryBadges() {
             >
               <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
               <div className="flex gap-5 py-2.5">
-                {cats.map((cat) => (
+                {cats.map((cat) => {
+                  const image = cat.icon || cat.image;
+                  return (
                   <Link
                     key={cat.id}
                     href={`/shop?category_slug=${cat.slug || cat.id}`}
                     className="cat-badge-item no-underline"
                   >
                     <div className="cat-badge-img-wrap">
-                      {cat.image ? (
+                      {image ? (
                         <Image
-                          src={mediaUrl(cat.image)}
+                          src={mediaUrl(image)}
                           alt={isBn && cat.name_bn ? cat.name_bn : cat.name}
                           width={160}
                           height={120}
@@ -103,7 +106,8 @@ export default function CategoryBadges() {
                       {isBn && cat.name_bn ? cat.name_bn : cat.name}
                     </span>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

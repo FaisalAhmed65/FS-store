@@ -31,6 +31,14 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        identifier = attrs.get(self.username_field) or attrs.get("email") or attrs.get("username")
+        if identifier:
+            identifier = str(identifier).strip()
+            user = Customer.objects.filter(email__iexact=identifier).only("username").first()
+            attrs[self.username_field] = user.username if user else identifier
+        return super().validate(attrs)
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

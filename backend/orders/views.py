@@ -11,7 +11,11 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return OrderCreateSerializer if self.request.method == "POST" else OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(customer=self.request.user).order_by("-created_at")
+        return (
+            Order.objects.filter(customer=self.request.user)
+            .prefetch_related("items", "stock_reservations")
+            .order_by("-created_at")
+        )
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -19,7 +23,17 @@ class OrderListCreateView(generics.ListCreateAPIView):
             customer=user,
             customer_name=user.get_full_name() or user.username,
             customer_email=user.email,
+            customer_phone=getattr(user, "phone", ""),
         )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        order = serializer.instance
+        data = OrderSerializer(order, context={"request": request}).data
+        headers = self.get_success_headers(data)
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class OrderDetailView(generics.RetrieveAPIView):
@@ -27,4 +41,7 @@ class OrderDetailView(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        return Order.objects.filter(customer=self.request.user)
+        return (
+            Order.objects.filter(customer=self.request.user)
+            .prefetch_related("items", "stock_reservations")
+        )

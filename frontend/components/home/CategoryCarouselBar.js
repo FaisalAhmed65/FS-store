@@ -8,7 +8,6 @@ import Link from "next/link";
 import useSWR from "swr";
 import { categoriesApi } from "@/lib/api";
 import { useLang } from "@/contexts/LanguageContext";
-import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 export default function CategoryCarouselBar() {
   const { data } = useSWR("catbar", () => categoriesApi.list({ root_only: true }).then((r) => r.data?.results ?? r.data ?? []));
@@ -21,7 +20,9 @@ export default function CategoryCarouselBar() {
     scrollRef.current.scrollBy({ left: dir * 300, behavior: "smooth" });
   }
 
-  const cats = Array.isArray(data) && data.length ? data : FALLBACK_CATEGORIES;
+  const cats = Array.isArray(data) ? data : [];
+
+  if (cats.length === 0) return null;
 
   return (
     <div

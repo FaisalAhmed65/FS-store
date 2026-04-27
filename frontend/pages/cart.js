@@ -28,6 +28,7 @@ export default function CartPage() {
   const [placing, setPlacing] = useState(false);
   const [error,   setError]   = useState(null);
   const [success, setSuccess] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
 
   async function placeOrder(e) {
     e.preventDefault();
@@ -38,6 +39,7 @@ export default function CartPage() {
       // 1. Create order
       const orderData = {
         ...shipping,
+        coupon_code: couponCode.trim(),
         items: items.map((i) => ({
           product: i.product.id,
           quantity: i.quantity,
@@ -132,11 +134,23 @@ export default function CartPage() {
                     <span>Total</span>
                     <span className="text-price-red">{formatPrice(totalPrice)}</span>
                   </div>
+                  {couponCode.trim() && (
+                    <p className="text-xs text-muted">
+                      Coupon will be validated and applied securely at checkout.
+                    </p>
+                  )}
                 </div>
 
                 {/* Shipping form */}
                 <form onSubmit={placeOrder} className="mt-4 space-y-3">
                   <h3 className="font-semibold text-sm text-gray-700">ডেলিভারি ঠিকানা</h3>
+                  <input
+                    type="text"
+                    placeholder="Coupon code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:border-primary uppercase"
+                  />
                   {Object.entries({
                     shipping_name:    "পূর্ণ নাম",
                     shipping_street:  "রাস্তার ঠিকানা",

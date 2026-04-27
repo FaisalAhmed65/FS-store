@@ -10,12 +10,14 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { formatPrice, mediaUrl } from "@/lib/utils";
 
 const STATUS_COLOR = {
-  pending:    "bg-orange-100 text-orange-700",
-  confirmed:  "bg-blue-100 text-blue-700",
+  cart: "bg-gray-100 text-gray-700",
+  pending_payment: "bg-orange-100 text-orange-700",
+  paid: "bg-blue-100 text-blue-700",
   processing: "bg-purple-100 text-purple-700",
-  shipped:    "bg-cyan-100 text-cyan-700",
-  delivered:  "bg-green-100 text-green-700",
-  cancelled:  "bg-red-100 text-red-700",
+  shipped: "bg-cyan-100 text-cyan-700",
+  delivered: "bg-green-100 text-green-700",
+  cancelled: "bg-red-100 text-red-700",
+  refunded: "bg-slate-100 text-slate-700",
 };
 
 function formatDate(iso) {

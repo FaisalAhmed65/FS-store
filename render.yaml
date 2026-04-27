@@ -1,0 +1,73 @@
+# Render Blueprint for TRD Store
+# Deploy with: New > Blueprint in Render dashboard and select this repository.
+
+services:
+  - type: redis
+    name: trd-store-redis
+    ipAllowList: []
+
+  - type: web
+    name: trd-store-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate && gunicorn trd_backend.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: trd-store-backend.onrender.com
+      - key: DB_NAME
+        fromDatabase:
+          name: trd-store-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: trd-store-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: trd-store-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: trd-store-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: trd-store-db
+          property: port
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: trd-store-redis
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://trd-store-frontend.onrender.com
+      - key: BACKEND_URL
+        value: https://trd-store-backend.onrender.com
+      - key: SSLCZ_STORE_ID
+        sync: false
+      - key: SSLCZ_STORE_PASSWD
+        sync: false
+      - key: SSLCZ_IS_SANDBOX
+        value: "True"
+
+  - type: web
+    name: trd-store-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://trd-store-backend.onrender.com/api/v1
+      - key: NEXT_PUBLIC_SITE_NAME
+        value: TRD Store
+
+databases:
+  - name: trd-store-db
+    databaseName: trd_store
+    user: trd_store

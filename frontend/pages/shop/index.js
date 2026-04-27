@@ -11,7 +11,7 @@ import { productsApi, categoriesApi } from "@/lib/api";
 import NoonProductCard from "@/components/home/NoonProductCard";
 import Pagination from "@/components/ui/Pagination";
 import { mediaUrl } from "@/lib/utils";
-import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallbackData";
+import { FALLBACK_CATEGORIES } from "@/lib/fallbackData";
 
 /* ─── helpers ─── */
 function useClickOutside(ref, handler) {
@@ -31,7 +31,7 @@ export default function ShopPage() {
   const {
     category_slug, category, search, q: searchAlias, page = 1,
     min_price, max_price,
-    deal_type, filter, rating, ordering, express, free_delivery,
+    deal_type, filter, rating, ordering, express, free_delivery, brand, seller_id,
   } = router.query;
   const filterDealMap = {
     featured: "featured",
@@ -43,6 +43,8 @@ export default function ShopPage() {
   const legacyFilter = queryValue(filter);
   const activeCategorySlug = queryValue(category_slug) || queryValue(category);
   const activeSearch = queryValue(search) || queryValue(searchAlias);
+  const activeBrand = queryValue(brand);
+  const activeSellerId = queryValue(seller_id);
   const activeDealType = queryValue(deal_type) || filterDealMap[legacyFilter] || "";
   const freeDeliveryActive = queryValue(free_delivery) === "1" || legacyFilter === "free-delivery";
 
@@ -50,6 +52,8 @@ export default function ShopPage() {
   const params = {
     ...(activeCategorySlug  && { category_slug: activeCategorySlug }),
     ...(activeSearch        && { search: activeSearch }),
+    ...(activeBrand         && { brand: activeBrand }),
+    ...(activeSellerId      && { seller_id: activeSellerId }),
     ...(min_price      && { min_price }),
     ...(max_price      && { max_price }),
     ...(activeDealType === "featured"    && { is_featured: true }),
@@ -59,15 +63,19 @@ export default function ShopPage() {
     ...(activeDealType === "eid"         && { is_deal: true }),
     ...(express === "1"             && { delivery_type: "express" }),
     ...(freeDeliveryActive          && { is_free_delivery: true }),
+    ...(rating        && { rating }),
     ...(ordering       && { ordering }),
     page,
   };
   const fetchKey = JSON.stringify(params);
-  const { data, isLoading } = useSWR(fetchKey, () => productsApi.list(params).then(r => r.data));
+  const { data, error, isLoading } = useSWR(fetchKey, () =>
+    (activeSearch ? productsApi.search(params) : productsApi.list(params)).then(r => r.data)
+  );
   const rawProducts = data?.results ?? (Array.isArray(data) ? data : []);
-  const products = rawProducts.length ? rawProducts : (!data ? FALLBACK_PRODUCTS : rawProducts);
+  const products = Array.isArray(rawProducts) ? rawProducts : [];
   const totalCount = data?.count ?? products.length;
   const totalPages = data?.count ? Math.ceil(data.count / 24) : 1;
+  const facets = data?.facets;
 
   // Category tree
   const { data: categoryTree } = useSWR("cat-tree", () =>
@@ -80,7 +88,8 @@ export default function ShopPage() {
 
   /* --- URL param helpers --- */
   function setParam(key, val) {
-    const q = { ...router.query, [key]: val, page: 1 };
+    const q = { ...router.query, [key]: val };
+    if (key !== "page") q.page = 1;
     if (key === "category_slug") delete q.category;
     if (key === "search") delete q.q;
     if (key === "deal_type" || key === "free_delivery") delete q.filter;
@@ -157,6 +166,11 @@ export default function ShopPage() {
             onDealChange={(val) => val ? setParam("deal_type", val) : clearParam("deal_type")}
             ratingVal={rating}
             onRatingChange={(val) => val ? setParam("rating", val) : clearParam("rating")}
+            facets={facets}
+            brand={activeBrand}
+            sellerId={activeSellerId}
+            onBrandChange={(val) => val ? setParam("brand", val) : clearParam("brand")}
+            onSellerChange={(val) => val ? setParam("seller_id", val) : clearParam("seller_id")}
           />
 
           {/* Backdrop */}
@@ -194,6 +208,12 @@ export default function ShopPage() {
                     <div className="h-5 bg-gray-100 rounded mt-2 w-1/2" />
                   </div>
                 ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-20">
+                <i className="fa fa-exclamation-circle text-4xl text-red-300 mb-4 block" />
+                <p className="text-gray-500 font-medium">Products could not be loaded from the backend</p>
+                <Link href="/shop" className="text-blue-600 text-sm mt-2 inline-block hover:underline">Retry without filters</Link>
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-20">
@@ -236,9 +256,15 @@ function Sidebar({
   freeDelivery, onFreeDeliveryToggle,
   dealType, onDealChange,
   ratingVal, onRatingChange,
+  facets, brand, sellerId, onBrandChange, onSellerChange,
 }) {
-  const [priceMin, setPriceMin] = useState(minPrice || 0);
-  const [priceMax, setPriceMax] = useState(maxPrice || 10000);
+  const [priceMin, setPriceMin] = useState(minPrice || "");
+  const [priceMax, setPriceMax] = useState(maxPrice || "");
+
+  useEffect(() => {
+    setPriceMin(minPrice || "");
+    setPriceMax(maxPrice || "");
+  }, [minPrice, maxPrice]);
 
   // Collapsed sections
   const [collapsed, setCollapsed] = useState({});
@@ -278,24 +304,31 @@ function Sidebar({
         {/* ── PRICE RANGE ── */}
         <FilterSection title="Price Range" sectionKey="price" collapsed={collapsed} toggle={toggle}>
           <div className="trd-price-slider">
-            <div className="flex justify-between items-center text-xs font-semibold text-gray-500 mb-2.5">
-              <span>BDT {priceMin}</span>
-              <span className="text-[10px] text-gray-400">BDT</span>
-              <span>BDT {priceMax}</span>
-            </div>
-            <div className="trd-range-track">
-              <div
-                className="trd-range-fill"
-                style={{ left: `${(priceMin / 10000) * 100}%`, right: `${100 - (priceMax / 10000) * 100}%` }}
-              />
-            </div>
-            <div className="trd-range-inputs">
-              <input type="range" min={0} max={10000} step={100} value={priceMin}
-                onChange={e => setPriceMin(Math.min(Number(e.target.value), priceMax - 100))}
-                className="trd-range-input" />
-              <input type="range" min={0} max={10000} step={100} value={priceMax}
-                onChange={e => setPriceMax(Math.max(Number(e.target.value), Number(priceMin) + 100))}
-                className="trd-range-input" />
+            <div className="grid grid-cols-2 gap-2">
+              <label className="text-[11px] font-semibold text-gray-500">
+                Min
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={priceMin}
+                  onChange={(e) => setPriceMin(e.target.value)}
+                  className="noon-price-input"
+                  placeholder="0"
+                />
+              </label>
+              <label className="text-[11px] font-semibold text-gray-500">
+                Max
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={priceMax}
+                  onChange={(e) => setPriceMax(e.target.value)}
+                  className="noon-price-input"
+                  placeholder="Any"
+                />
+              </label>
             </div>
             <button
               onClick={() => onPriceApply(priceMin, priceMax)}
@@ -303,6 +336,19 @@ function Sidebar({
             >
               Apply
             </button>
+            {(priceMin || priceMax) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPriceMin("");
+                  setPriceMax("");
+                  onPriceApply("", "");
+                }}
+                className="noon-clear-btn"
+              >
+                Clear price
+              </button>
+            )}
           </div>
         </FilterSection>
 
@@ -325,6 +371,42 @@ function Sidebar({
         </FilterSection>
 
         {/* ── DEALS ── */}
+        {facets?.brands?.length > 0 && (
+          <FilterSection title="Brand" sectionKey="brand" collapsed={collapsed} toggle={toggle}>
+            {facets.brands.slice(0, 8).map((item) => (
+              <label key={item.brand} className="noon-filter-check">
+                <input
+                  type="radio"
+                  name="brand"
+                  checked={brand === item.brand}
+                  onChange={() => onBrandChange(brand === item.brand ? "" : item.brand)}
+                  className="noon-radio"
+                />
+                <span className="truncate">{item.brand}</span>
+                <span className="text-gray-400 text-xs ml-auto">{item.count}</span>
+              </label>
+            ))}
+          </FilterSection>
+        )}
+
+        {facets?.sellers?.length > 0 && (
+          <FilterSection title="Seller" sectionKey="seller" collapsed={collapsed} toggle={toggle}>
+            {facets.sellers.slice(0, 8).map((item) => (
+              <label key={item.id} className="noon-filter-check">
+                <input
+                  type="radio"
+                  name="seller"
+                  checked={sellerId === String(item.id)}
+                  onChange={() => onSellerChange(sellerId === String(item.id) ? "" : item.id)}
+                  className="noon-radio"
+                />
+                <span className="truncate">{item.business_name}</span>
+                <span className="text-gray-400 text-xs ml-auto">{item.count}</span>
+              </label>
+            ))}
+          </FilterSection>
+        )}
+
         <FilterSection title="Deals" sectionKey="deals" collapsed={collapsed} toggle={toggle}>
           {[
             { val: "eid",          label: "EID Offers" },

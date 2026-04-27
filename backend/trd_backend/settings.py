@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     # Third-party
     "rest_framework",
     "rest_framework_simplejwt",
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -131,6 +133,7 @@ DEFAULT_FROM_EMAIL   = config("DEFAULT_FROM_EMAIL", default="noreply@trdstore.co
 
 # OTP settings
 OTP_EXPIRY_MINUTES   = config("OTP_EXPIRY_MINUTES", default=10, cast=int)
+INVENTORY_RESERVATION_MINUTES = config("INVENTORY_RESERVATION_MINUTES", default=15, cast=int)
 
 # ─── SSLCommerz (Bangladesh payment gateway) ───────────────────────────────────
 SSLCZ_STORE_ID       = config("SSLCZ_STORE_ID",      default="")
@@ -146,6 +149,8 @@ SSLCZ_VALIDATION_URL = (
     if config("SSLCZ_IS_SANDBOX", default=True, cast=bool)
     else "https://securepay.sslcommerz.com/validator/api/validationserverAPI.php"
 )
+BACKEND_URL          = config("BACKEND_URL", default="http://localhost:8000")
+FRONTEND_URL         = config("FRONTEND_URL", default="http://localhost:3000")
 
 # ─── Static / Media ────────────────────────────────────────────────────────────
 STATIC_URL = "/static/"
@@ -153,6 +158,19 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+if DEBUG:
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -185,7 +203,7 @@ SIMPLE_JWT = {
 # ─── CORS ─────────────────────────────────────────────────────────────────────
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = [
-    config("FRONTEND_URL", default="http://localhost:3000"),
+    FRONTEND_URL,
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -199,12 +217,12 @@ SPECTACULAR_SETTINGS = {
 # ─── Jazzmin Admin UI ─────────────────────────────────────────────────────────
 JAZZMIN_SETTINGS = {
     # Window title & brand
-    "site_title": "FS Store Admin",
-    "site_header": "FS Store",
-    "site_brand": "FS Store",
+    "site_title": "TRD Store Admin",
+    "site_header": "TRD Store",
+    "site_brand": "TRD Store",
     "site_logo": None,  # set to "img/logo.png" if you add a logo in static
-    "welcome_sign": "Welcome to FS Store Admin",
-    "copyright": "FS Store © 2026",
+    "welcome_sign": "Welcome to TRD Store Admin",
+    "copyright": "TRD Store © 2026",
 
     # Search bar — searches across these models
     "search_model": ["customers.Customer", "products.Product", "orders.Order"],
@@ -272,23 +290,23 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-dark",   # yellow brand bar (matches TRD yellow)
+    "brand_colour": "navbar-white",
     "accent": "accent-primary",         # yellow accent
-    "navbar": "navbar-dark",
+    "navbar": "navbar-white navbar-light",
     "no_navbar_border": True,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-primary",  # dark sidebar with yellow highlights
+    "sidebar": "sidebar-light-primary",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "darkly",
-    "default_theme_mode": "dark",
+    "theme": "flatly",
+    "default_theme_mode": "light",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",

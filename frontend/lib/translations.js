@@ -8,7 +8,7 @@ export const BN_STRINGS = {
   // Header
   TRADERS_STORE: "\u09ac\u09cd\u09b0\u09c7\u09a4\u09be \u09b8\u09cd\u099f\u09cb\u09b0", // ব্রেতা স্টোর
   DELIVER_TO: "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf", // ডেলিভারি
-  BANGLADESH: "\u09ac\u09be\u09a8\u09cd\u0997\u09b2\u09be\u09a6\u09c7\u09b6", // বাংলাদেশ
+  BANGLADESH: "\u09ac\u09be\u0982\u09b2\u09be\u09a6\u09c7\u09b6", // বাংলাদেশ
   SEARCH_PLACEHOLDER: "\u0986\u09aa\u09a8\u09bf \u0995\u09bf \u0996\u09c1\u0981\u099c\u099b\u09c7\u09a8?", // আপনি কি খুঁজছেন?
   
   // Navigation

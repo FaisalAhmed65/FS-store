@@ -1,0 +1,13 @@
+Username / Business	Email
+TRD Demo Seller 01 - Tech Bazaar	demo.seller01@trdstore.test
+TRD Demo Seller 02 - Gadget Point	demo.seller02@trdstore.test
+TRD Demo Seller 03 - Digital Zone	demo.seller03@trdstore.test
+TRD Demo Seller 04 - Byte House	    demo.seller04@trdstore.test
+TRD Demo Seller 05 - Smart Hub	    demo.seller05@trdstore.test
+TRD Demo Seller 06 - Device Mart	demo.seller06@trdstore.test
+TRD Demo Seller 07 - Electro Nest	demo.seller07@trdstore.test
+TRD Demo Seller 08 - Gear Gallery	demo.seller08@trdstore.test
+TRD Demo Seller 09 - Future Store	demo.seller09@trdstore.test
+TRD Demo Seller 10 - Accessory Lab	demo.seller10@trdstore.test
+
+Demo seller login credentials, same password for all: DemoSeller@2026!
